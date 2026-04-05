@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ product.name }} | Amazon.in
+{% endblock %}
+
+{% block content %}
+<!-- Light Amazon Top Breadcrumb -->
+<div class="bg-white py-2 px-3 border-bottom small shadow-sm text-muted">
+    <a href="{% url 'home' %}" class="text-muted text-decoration-none hover-orange">Home</a> 
+    <span class="mx-1">&rsaquo;</span>
+    <a href="{% url 'category_products' product.category.slug|default:'all' %}" class="text-muted text-decoration-none hover-orange">{{ product.category.name|default:"Uncategorized" }}</a>
+    <span class="mx-1">&rsaquo;</span>
+    <span class="text-dark">{{ product.name|truncatechars:40 }}</span>
+</div>
+
+<div class="container-fluid bg-white p-4">
+    <div class="row">
+        
+        <!-- Center Image Section (Amazon Layout) -->
+        <div class="col-md-5 mb-4 position-relative px-4">
+            {% if product.stock < 5 and product.stock > 0 %}
+                <span class="position-absolute top-0 start-0 badge bg-danger m-4 fs-6 z-1 shadow-sm">Only {{ product.stock }} left!</span>
+            {% endif %}
+            
+            <div class="text-center position-sticky top-0 sticky-top" style="z-index: 1;">
+                {% if product.image %}
+                    <img id="mainProductImage" src="{{ product.image.url }}" class="img-fluid object-fit-contain mix-blend-multiply" style="max-height: 500px;" alt="{{ product.name }}">
+                {% else %}
+                    <div class="bg-light w-100 d-flex justify-content-center align-items-center text-muted" style="height: 500px;">
+                        <i class="bi bi-image" style="font-size: 5rem;"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Details Text Section -->
+        <div class="col-md-5 mb-4 pe-md-4">
+            <h1 class="fw-normal fs-3 lh-sm mb-1 text-dark" style="font-size: 24px;">{{ product.name }}</h1>
+            
+            <a href="{% url 'seller_public_profile' product.seller.username %}" class="text-info text-decoration-none hover-orange d-block mb-2 text-info fs-6">Visit the {{ product.seller.sellerprofile.business_name|default:product.seller.username }} Store</a>
+            
+            <div class="mb-3 d-flex align-items-center">
+                <span class="text-warning fs-5 me-3">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                </span>
+                <a href="#reviews" class="text-decoration-none text-info hover-orange border-start ps-3 border-secondary">1,024 ratings</a>
+            </div>
+            
+            <hr class="border-secondary mb-3 mt-1">
+            
+            <!-- Price Area -->
+            <div class="mb-2 d-flex align-items-start">
+                <span class="fs-4 text-danger fw-light me-2">-15%</span>
+                <span class="fs-5 text-dark mt-1 me-1">₹</span>
+                <span class="fs-1 fw-bold text-dark lh-1">{{ product.price }}</span>
+            </div>
+            
+            <div class="text-muted small mb-3">
+                M.R.P.: <del>₹{{ product.price|add:"500" }}</del> <br>
+                Inclusive of all taxes <br>
+                <strong>EMI</strong> starts at ₹120. No Cost EMI available <a href="#" class="text-info text-decoration-none">EMI options</a>
+            </div>
+
+            <hr class="border-secondary mb-4 mt-1">
+            
+            <h5 class="fw-bold fs-6">About this item</h5>
+            <ul class="mb-4 text-dark fs-6 ps-3">
+                <li class="mb-2" style="white-space: pre-line;">{{ product.description }}</li>
+                <li class="mb-2">Sold by highly rated seller <strong>{{ product.seller.sellerprofile.business_name|default:product.seller.username }}</strong>.</li>
+                <li class="mb-2">10 Days Returnable and Amazon Delivered.</li>
+            </ul>
+        </div>
+
+        <!-- Right Side Buy Box -->
+        <div class="col-md-2 mb-4">
+            <div class="card shadow-sm border border-secondary border-opacity-50 rounded-2" style="max-width: 300px;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-start mb-2">
+                        <span class="fs-6 text-dark mt-1 me-1">₹</span>
+                        <span class="fs-4 fw-bold text-dark lh-1">{{ product.price }}</span>
+                    </div>
+                    
+                    <p class="text-success fw-bold small mb-2"><i class="bi bi-check2 text-amazon"></i> FREE delivery tomorrow</p>
+                    <p class="text-success fw-bold small mb-3">Order within 2 hrs 15 mins</p>
+                    
+                    <div class="d-flex align-items-center text-info hover-orange small mb-3 lh-sm fw-semibold">
+                        <i class="bi bi-geo-alt fs-5 me-1 text-dark"></i> Deliver to Kunal - Pune 411004
+                    </div>
+
+                    {% if product.stock > 0 %}
+                        <h5 class="text-success fs-5 fw-normal mb-3">In stock</h5>
+                        
+                        <!-- Add to Cart Form -->
+                        <form action="{% url 'cart:cart_add' product.id %}" method="post" class="mb-2">
+                            {% csrf_token %}
+                            <div class="mb-3 d-flex align-items-center">
+                                <label for="quantity" class="form-label small fw-bold me-2 mb-0">Qty:</label>
+                                <select id="quantity" name="quantity" class="form-select form-select-sm shadow-sm rounded-2 bg-light border-secondary" style="width: auto; box-shadow: 0 2px 5px rgba(15,17,17,.15) !important;">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-amazon w-100 rounded-pill shadow-sm" style="background-color: #ffd814; border-color: #fcd200;">Add to Cart</button>
+                        </form>
+                        
+                        <!-- Buy Now Form -->
+                        <form action="{% url 'cart:buy_now' product.id %}" method="post">
+                            {% csrf_token %}
+                            <!-- Uses Javascript to pass quantity from select box to hidden input -->
+                            <input type="hidden" name="quantity" value="1" id="buy_now_qty">
+                            <button type="submit" class="btn btn-amazon w-100 rounded-pill shadow-sm" style="background-color: #ffa41c; border-color: #ff8f00;" onclick="document.getElementById('buy_now_qty').value = document.getElementById('quantity').value;">Buy Now</button>
+                        </form>
+                        
+                        <div class="d-flex align-items-center mt-3 small text-muted">
+                            <i class="bi bi-lock-fill fs-5 me-2"></i> <a href="#" class="text-info text-decoration-none hover-orange">Secure transaction</a>
+                        </div>
+                        
+                        <div class="mt-3 small" style="font-size: 11px;">
+                            <table class="table table-borderless table-sm mb-0">
+                                <tbody>
+                                    <tr><td class="text-muted p-0 pb-1">Ships from</td><td class="p-0 pb-1">Amazon</td></tr>
+                                    <tr><td class="text-muted p-0 pb-1">Sold by</td><td class="text-info p-0 pb-1"><a href="{% url 'seller_public_profile' product.seller.username %}" class="text-info text-decoration-none">{{ product.seller.sellerprofile.business_name|default:product.seller.username }}</a></td></tr>
+                                    <tr><td class="text-muted p-0 pb-1">Returns</td><td class="text-info p-0 pb-1">10-day refund/replacement</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    {% else %}
+                        <h5 class="text-danger mb-3 fs-5 fw-bold">Currently unavailable.</h5>
+                        <p class="small text-muted mb-0">We don't know when or if this item will be back in stock.</p>
+                    {% endif %}
+                    
+                    <hr>
+                    <form action="{% url 'cart:add_to_wishlist' product.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light w-100 border text-start rounded-1 shadow-sm small py-1 bg-gradient hover-orange">Add to Wish List</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-orange:hover { color: #c7511f !important; text-decoration: underline !important; }
+.text-amazon { color: #007185; }
+.mix-blend-multiply { mix-blend-mode: multiply; }
+</style>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Add Address - Amazon.in{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-6 col-lg-5">
+        <h2 class="h4 mb-4 fw-normal text-center">Add a new address</h2>
+        <div class="card border border-secondary border-opacity-50 rounded-2 shadow-sm">
+            <div class="card-body p-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" style="font-size: 0.85rem;">Full name</label>
+                        <input type="text" name="full_name" class="form-control shadow-sm border-secondary border-opacity-50" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" style="font-size: 0.85rem;">Mobile number</label>
+                        <input type="text" name="phone" class="form-control shadow-sm border-secondary border-opacity-50" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" style="font-size: 0.85rem;">Flat, House no., Building, Company, Apartment</label>
+                        <input type="text" name="address_line_1" class="form-control shadow-sm border-secondary border-opacity-50" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" style="font-size: 0.85rem;">Area, Street, Sector, Village</label>
+                        <input type="text" name="address_line_2" class="form-control shadow-sm border-secondary border-opacity-50">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small" style="font-size: 0.85rem;">Landmark</label>
+                        <input type="text" name="landmark" class="form-control shadow-sm border-secondary border-opacity-50" placeholder="E.g. near apollo hospital">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold small" style="font-size: 0.85rem;">Pincode</label>
+                            <input type="text" name="pincode" class="form-control shadow-sm border-secondary border-opacity-50" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold small" style="font-size: 0.85rem;">City</label>
+                            <input type="text" name="city" class="form-control shadow-sm border-secondary border-opacity-50" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold small" style="font-size: 0.85rem;">State</label>
+                            <input type="text" name="state" class="form-control shadow-sm border-secondary border-opacity-50" required>
+                        </div>
+                    </div>
+                    <div class="mb-4 form-check mt-2">
+                        <input type="checkbox" name="is_default" class="form-check-input border-secondary" id="defaultCheck" checked>
+                        <label class="form-check-label small" for="defaultCheck" style="font-size: 0.85rem;">Make this my default address</label>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 shadow-sm pt-2 pb-2" style="background-color: #ffd814; border-color: #fcd200;">Use this address</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

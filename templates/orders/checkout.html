@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Amazon Checkout{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h1 class="h3 border-bottom pb-2">Checkout (<span class="text-primary">{{ item_count }} items</span>)</h1>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Main Checkout Flow Column -->
+        <div class="col-md-8">
+            <form method="POST" action="{% url 'orders:checkout' %}">
+                {% csrf_token %}
+                
+                <!-- Step 1: Delivery Address -->
+                <div class="card mb-3 border-0 border-bottom rounded-0">
+                    <div class="card-body">
+                        <h4 class="card-title text-danger fs-5"><strong>1 &nbsp;&nbsp; Delivery address</strong></h4>
+                        <div class="ps-4 ms-2 mt-3">
+                            {% if addresses %}
+                                {% for address in addresses %}
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="address_id" id="addr_{{ address.id }}" value="{{ address.id }}" {% if address.is_default or forloop.first %}checked{% endif %}>
+                                    <label class="form-check-label fw-bold" for="addr_{{ address.id }}">
+                                        {{ address.full_name }}
+                                        <span class="fw-normal text-muted d-block small">{{ address.address_line_1 }}{% if address.address_line_2 %}, {{ address.address_line_2 }}{% endif %}, {{ address.city }}, {{ address.state }} {{ address.pincode }}</span>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                                <a href="{% url 'address_add' %}" class="text-decoration-none mt-2 d-inline-block small text-primary"><i class="bi bi-plus"></i> Add a new address</a>
+                            {% else %}
+                                <p class="text-muted small">You don't have any saved addresses. Please <a href="{% url 'address_add' %}">add a new address</a>.</p>
+                                <!-- Basic fallback in place of real address module -->
+                                <input type="hidden" name="address_id" value="1">
+                                <p class="text-warning small"><i class="bi bi-info-circle"></i> Address configuration is a placeholder until the profile module is fully integrated.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Payment Method (Placeholder) -->
+                <div class="card mb-3 border-0 border-bottom rounded-0 opacity-75">
+                    <div class="card-body">
+                        <h4 class="card-title text-muted fs-5 cursor-pointer"><strong>2 &nbsp;&nbsp; Payment method</strong></h4>
+                        <div class="ps-4 ms-2 mt-2">
+                            <p class="small text-muted mb-0">You'll choose a payment method in the next step.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Review items and shipping -->
+                <div class="card mb-3 border-0">
+                    <div class="card-body">
+                        <h4 class="card-title text-danger fs-5"><strong>3 &nbsp;&nbsp; Review items and delivery</strong></h4>
+                        <div class="ps-4 ms-2 mt-3 border rounded p-3 bg-white">
+                            <h5 class="text-success small mb-3 fw-bold">Guaranteed delivery: 2-4 Business Days</h5>
+                            <p class="small text-muted mb-3">Items dispatched by Amazon.</p>
+                            
+                            {% for item in items %}
+                            <div class="row align-items-start mb-3">
+                                <div class="col-2">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" class="img-fluid border" alt="{{ item.product.name }}">
+                                    {% else %}
+                                        <img src="{% static 'images/placeholder.png' %}" class="img-fluid border" alt="Placeholder">
+                                    {% endif %}
+                                </div>
+                                <div class="col-10">
+                                    <h6 class="mb-1 text-dark fw-bold">{{ item.product.name }}</h6>
+                                    <p class="text-danger fw-bold mb-1 fs-5">₹{{ item.product.price }}</p>
+                                    <p class="small text-muted mb-0">Quantity: {{ item.quantity }}</p>
+                                    <p class="small text-muted mb-0">Sold by: {{ item.product.seller.username|default:"Seller" }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+        </div>
+        
+        <!-- Summary Column -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border bg-light">
+                <div class="card-body">
+                    <button type="submit" class="btn btn-warning w-100 rounded mb-3 pt-2 pb-2 fw-bold shadow-sm" style="font-size: 0.95rem;">Continue to Payment</button>
+                    <p class="text-center text-muted small border-bottom pb-3 mb-3" style="font-size: 0.75rem;">You can review this order before it's final.</p>
+                    
+                    <h5 class="mb-3 fs-6 fw-bold">Order Summary</h5>
+                    
+                    <div class="d-flex justify-content-between mb-1 small text-muted">
+                        <span>Items:</span>
+                        <span>₹{{ subtotal }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1 small text-muted">
+                        <span>Delivery:</span>
+                        <span>₹{{ shipping }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom pb-2 mb-2 small text-muted">
+                        <span>Total:</span>
+                        <span>₹{{ total }}</span>
+                    </div>
+                    {% if discount > 0 %}
+                    <div class="d-flex justify-content-between mb-2 text-danger small">
+                        <span>Promotion Applied:</span>
+                        <span>-₹{{ discount }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between my-3 text-danger fs-5 fw-bold">
+                        <span>Order Total:</span>
+                        <span>₹{{ total }}</span>
+                    </div>
+
+                    <div class="border-top pt-3 mt-3">
+                       <a href="#" class="small text-decoration-none">How are delivery costs calculated?</a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

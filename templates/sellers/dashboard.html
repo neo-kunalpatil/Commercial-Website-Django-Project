@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Seller Central | Amazon Marketplace{% endblock %}
+
+{% block content %}
+<div class="row mt-3">
+    <!-- SELLER SIDEBAR -->
+    <div class="col-md-3 mb-4">
+        {% include 'includes/seller_sidebar.html' %}
+    </div>
+
+    <!-- SELLER CONTENT -->
+    <div class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <h2>Welcome back, {{ profile.business_name|default:user.username }}!</h2>
+            </div>
+        </div>
+
+        {% if not profile or not profile.gst_number %}
+        <div class="alert alert-warning shadow-sm border-start border-warning border-5">
+            <h5 class="alert-heading fw-bold">Complete your Seller Profile!</h5>
+            <p class="mb-0">Please complete your business settings (GST and Address) to activate full seller privileges.</p>
+            <a href="{% url 'seller_profile_update' %}" class="btn btn-sm btn-dark mt-2">Update Profile Now</a>
+        </div>
+        {% endif %}
+
+        {% if pending_verifications > 0 %}
+        <div class="alert alert-danger shadow-sm border-start border-danger border-5 d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="alert-heading fw-bold mb-1"><i class="bi bi-shield-exclamation me-2"></i>Action Required: Payment Verifications</h5>
+                <p class="mb-0 small">You have <strong>{{ pending_verifications }}</strong> new payment proof(s) from buyers awaiting your verification.</p>
+            </div>
+            <a href="{% url 'payments:payment_verification_list' %}" class="btn btn-danger btn-sm fw-bold">Verify Now</a>
+        </div>
+        {% endif %}
+
+        <!-- QUICK ACTION BUTTONS -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body py-3 d-flex gap-2 flex-wrap">
+                        <strong class="align-self-center me-2">Quick Actions:</strong>
+                        <a href="{% url 'product_create' %}" class="btn btn-sm btn-amazon" style="background-color: #f0c14b; border-color: #a88734;">Add Product</a>
+                        <a href="{% url 'seller_product_list' %}" class="btn btn-sm btn-outline-secondary">Manage Products</a>
+                        <a href="{% url 'seller_orders' %}" class="btn btn-sm btn-outline-secondary">View Orders</a>
+                        <a href="{% url 'payments:payment_verification_list' %}" class="btn btn-sm btn-outline-danger">Verify Payments</a>
+                        <a href="{% url 'seller_stock' %}" class="btn btn-sm btn-outline-secondary">Update Stock</a>
+                        <a href="{% url 'seller_payments' %}" class="btn btn-sm btn-outline-secondary">View Payments</a>
+                        <a href="{% url 'seller_returns' %}" class="btn btn-sm btn-outline-secondary">Returns</a>
+                        <a href="{% url 'seller_profile_update' %}" class="btn btn-sm btn-outline-dark">Business Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATS CARDS -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 text-center py-3 bg-light">
+                    <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.8rem;">Total Products</h6>
+                    <h3 class="fw-bold mb-0 text-dark">{{ total_products }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 text-center py-3 bg-light">
+                    <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.8rem;">Active Products</h6>
+                    <h3 class="fw-bold mb-0 text-success">{{ active_products }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 text-center py-3 bg-light">
+                    <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.8rem;">Out of Stock</h6>
+                    <h3 class="fw-bold mb-0 text-danger">{{ out_of_stock }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 text-center py-3 bg-light">
+                    <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.8rem;">Total Earnings</h6>
+                    <h3 class="fw-bold mb-0 text-primary">₹{{ total_earnings|floatformat:2 }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 text-center py-3 bg-light">
+                    <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.8rem;">Total Orders</h6>
+                    <h3 class="fw-bold mb-0 text-dark">{{ total_orders }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 text-center py-3 bg-light">
+                    <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.8rem;">Pending Orders</h6>
+                    <h3 class="fw-bold mb-0 text-warning">{{ pending_orders }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 text-center py-3 bg-light">
+                    <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.8rem;">Delivered</h6>
+                    <h3 class="fw-bold mb-0 text-success">{{ delivered_orders }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 text-center py-3 bg-light">
+                    <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.8rem;">Returns</h6>
+                    <h3 class="fw-bold mb-0 text-danger">{{ return_requests }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card shadow-sm border-0 text-center py-3 bg-light border-start border-danger border-4">
+                    <h6 class="text-muted text-uppercase mb-1" style="font-size: 0.8rem;">Wait Verification</h6>
+                    <h3 class="fw-bold mb-0 text-danger">₹{{ pending_verification_earnings|floatformat:2 }}</h3>
+                    <small class="text-muted" style="font-size: 0.7rem;">{{ pending_verifications }} orders pending</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT ACTIVITY / RECENT PRODUCTS -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                        <h5 class="mb-0 fw-bold">Recent Activity (Latest Products)</h5>
+                        <a href="{% url 'seller_product_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in recent_products %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if product.image %}
+                                                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 40px; height: 40px; object-fit: cover;" class="rounded me-2">
+                                            {% else %}
+                                                <div class="bg-secondary rounded me-2" style="width: 40px; height: 40px;"></div>
+                                            {% endif %}
+                                            <span class="fw-semibold">{{ product.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ product.category.name|default:"-" }}</td>
+                                    <td>₹{{ product.price }}</td>
+                                    <td>
+                                        {% if product.stock > 10 %}
+                                            <span class="text-success">{{ product.stock }}</span>
+                                        {% elif product.stock > 0 %}
+                                            <span class="text-warning fw-bold">{{ product.stock }} (Low)</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Out of Stock</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if product.available %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Hidden</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        <i class="bi bi-box-seam fs-1 d-block mb-2"></i>
+                                        No recent activity to show.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

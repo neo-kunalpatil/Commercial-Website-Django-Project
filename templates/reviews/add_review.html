@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% if is_update %}{% trans "Update Review" %}{% else %}{% trans "Write a Review" %}{% endif %} - {{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <h2 class="fw-bold mb-4">{% if is_update %}{% trans "Update your review" %}{% else %}{% trans "Write a review" %}{% endif %}</h2>
+            
+            <div class="d-flex align-items-center mb-4 p-3 bg-light rounded border">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 60px; height: 60px; object-fit: cover;" class="rounded me-3 border">
+                {% endif %}
+                <div>
+                    <h6 class="mb-0 fw-bold">{{ product.name }}</h6>
+                    <small class="text-muted">{% trans "Sold by" %} {{ product.seller.sellerprofile.business_name|default:product.seller.username }}</small>
+                </div>
+            </div>
+
+            <form method="POST" class="needs-validation">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold">{% trans "Overall rating" %}</label>
+                    <div style="max-width: 250px;">
+                        {{ form.rating }}
+                    </div>
+                    {% if form.rating.errors %}
+                        <div class="text-danger small mt-1">{{ form.rating.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">{% trans "Add a headline" %}</label>
+                    {{ form.headline }}
+                    {% if form.headline.errors %}
+                        <div class="text-danger small mt-1">{{ form.headline.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label fw-bold">{% trans "Add a written review" %}</label>
+                    {{ form.comment }}
+                    {% if form.comment.errors %}
+                        <div class="text-danger small mt-1">{{ form.comment.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'product_detail' product.id %}" class="btn btn-light px-4 border rounded-pill">{% trans "Cancel" %}</a>
+                    <button type="submit" class="btn btn-warning px-5 fw-bold shadow-sm rounded-pill">{% trans "Submit" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

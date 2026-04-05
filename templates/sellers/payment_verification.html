@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}Verify Payments - Seller Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mt-4 mb-5">
+    <div class="col-md-3 mb-4">
+        <div class="list-group shadow-sm border-0">
+            <a href="{% url 'seller_dashboard' %}" class="list-group-item list-group-item-action">Dashboard</a>
+            <a href="{% url 'payments:payment_verification_list' %}" class="list-group-item list-group-item-action active" style="background-color: #f0c14b; border-color: #a88734; color: #111; font-weight: 500;">Verify Payments</a>
+            <a href="{% url 'seller_payments' %}" class="list-group-item list-group-item-action">Earnings & Finance</a>
+            <a href="{% url 'seller_orders' %}" class="list-group-item list-group-item-action">Manage Orders</a>
+            <a href="{% url 'seller_product_list' %}" class="list-group-item list-group-item-action">My Products</a>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h4 mb-0"><i class="bi bi-shield-check me-2"></i>Payment Verification Panel</h2>
+            <span class="badge bg-danger rounded-pill px-3 py-2">{{ pending_payments.count }} PENDING</span>
+        </div>
+
+        {% if pending_payments %}
+        <div class="card shadow-sm border-0 mb-5">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title h6 mb-0 fw-bold text-uppercase text-muted">Awaiting Action</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="border-0 small">Order ID</th>
+                            <th class="border-0 small">Buyer</th>
+                            <th class="border-0 small">Amount</th>
+                            <th class="border-0 small">UTR / ID</th>
+                            <th class="border-0 small">Proof</th>
+                            <th class="border-0 small text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in pending_payments %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark mb-0">#{{ payment.order.order_id|truncatechars:8 }}</div>
+                                <div class="text-muted extra-small">{{ payment.created_at|date:"d M, h:i A" }}</div>
+                            </td>
+                            <td>
+                                <div class="small fw-bold">{{ payment.order.buyer.username }}</div>
+                            </td>
+                            <td class="fw-bold text-danger">₹{{ payment.amount }}</td>
+                            <td><code class="bg-light px-2 py-1 rounded small">{{ payment.transaction_id }}</code></td>
+                            <td>
+                                {% if payment.proof_image %}
+                                <a href="{{ payment.proof_image.url }}" target="_blank" class="text-decoration-none">
+                                    <i class="bi bi-image text-primary"></i> <span class="small">View</span>
+                                </a>
+                                {% else %}
+                                <span class="text-muted small">No Image</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'payments:verify_payment' payment.payment_id %}" class="btn btn-warning btn-sm px-3 fw-bold rounded-pill">
+                                    Verify
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="card shadow-sm border-0 text-center py-5 mb-5">
+            <div class="card-body">
+                <i class="bi bi-check2-circle display-4 text-success mb-3"></i>
+                <h5 class="fw-bold">No Pending Verifications</h5>
+                <p class="text-muted small">You are all caught up! New payment proofs from buyers will appear here.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if completed_payments %}
+        <h5 class="h6 fw-bold mb-3 text-uppercase text-muted">Recently Verified</h5>
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="border-0 small opacity-75">Order ID</th>
+                            <th class="border-0 small opacity-75">Amount</th>
+                            <th class="border-0 small opacity-75">Verified On</th>
+                            <th class="border-0 small opacity-75 text-end">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in completed_payments %}
+                        <tr>
+                            <td class="py-3">#{{ payment.order.order_id|truncatechars:8 }}</td>
+                            <td class="fw-bold small">₹{{ payment.amount }}</td>
+                            <td class="text-muted small">{{ payment.verified_at|date:"d M, h:i A" }}</td>
+                            <td class="text-end">
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">CONFIRMED</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .extra-small { font-size: 0.75rem; }
+</style>
+{% endblock %}

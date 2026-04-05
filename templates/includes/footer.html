@@ -1,0 +1,82 @@
+<!-- Amazon Style Footer -->
+<footer class="mt-auto">
+    
+    <!-- Back to top strip -->
+    <a href="#" class="d-block text-center text-white py-3 fs-6 bg-amazon-light text-decoration-none bg-amazon-light-hover" style="background-color: #37475a;">
+        Back to top
+    </a>
+
+    <!-- Main Links Section -->
+    <div class="bg-amazon-light text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-6 col-md-3 mb-4">
+                    <h6 class="fw-bold mb-3">Get to Know Us</h6>
+                    <ul class="list-unstyled small lh-lg">
+                        <li><a href="#" class="text-white text-decoration-none">About Us</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Careers</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Press Releases</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Amazon Science</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md-3 mb-4">
+                    <h6 class="fw-bold mb-3">Connect with Us</h6>
+                    <ul class="list-unstyled small lh-lg">
+                        <li><a href="#" class="text-white text-decoration-none">Facebook</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Twitter</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Instagram</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md-3 mb-4">
+                    <h6 class="fw-bold mb-3">Make Money with Us</h6>
+                    <ul class="list-unstyled small lh-lg">
+                        <li><a href="{% url 'register' %}?role=SELLER" class="text-white text-decoration-none">Sell on Amazon</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Sell under Amazon Accelerator</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Protect and Build Your Brand</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Amazon Global Selling</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Become an Affiliate</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Fulfilment by Amazon</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md-3 mb-4">
+                    <h6 class="fw-bold mb-3">Let Us Help You</h6>
+                    <ul class="list-unstyled small lh-lg">
+                        <li><a href="#" class="text-white text-decoration-none">COVID-19 and Amazon</a></li>
+                        <li><a href="{% url 'profile' %}" class="text-white text-decoration-none">Your Account</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Returns Centre</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">100% Purchase Protection</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Amazon App Download</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Help</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="border-secondary mt-4 mb-4">
+            
+            <div class="text-center">
+                <a href="{% url 'home' %}" class="fs-3 fw-bold text-white text-decoration-none me-4">Amazon.in</a>
+                <span class="border border-secondary py-1 px-3 rounded small">
+                    <i class="bi bi-globe me-1"></i> English
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Copyright Strip -->
+    <div class="bg-amazon-dark text-white py-4 text-center pb-5">
+        <div class="small mb-2">
+            <a href="#" class="text-white text-decoration-none mx-2">Conditions of Use & Sale</a>
+            <a href="#" class="text-white text-decoration-none mx-2">Privacy Notice</a>
+            <a href="#" class="text-white text-decoration-none mx-2">Interest-Based Ads</a>
+        </div>
+        <div class="small text-white-50">
+            &copy; 1996-{% now "Y" %}, Amazon.com, Inc. or its affiliates (Demo Clone)
+        </div>
+    </div>
+</footer>
+
+<style>
+.bg-amazon-light-hover:hover {
+    background-color: #485769 !important;
+}
+</style>

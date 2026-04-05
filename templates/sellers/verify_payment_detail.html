@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Verify Payment Details - Seller Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mt-4 mb-5 justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <a href="{% url 'payments:payment_verification_list' %}" class="btn btn-link text-decoration-none text-muted mb-4 p-0">
+            <i class="bi bi-arrow-left me-1"></i> Back to Verification List
+        </a>
+
+        <div class="row align-items-start g-4">
+            <!-- Left Column: Payment Details -->
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 mb-4 h-100">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="h6 fw-bold mb-0 text-uppercase">Payment Info</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                            <span class="text-muted small">Order ID</span>
+                            <span class="fw-bold">#{{ payment.order.order_id }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                            <span class="text-muted small">Buyer Name</span>
+                            <span class="fw-bold">{{ payment.order.buyer.username }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                            <span class="text-muted small">Amount to Verify</span>
+                            <span class="fw-bold text-danger h5 mb-0">₹{{ payment.amount }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                            <span class="text-muted small">Transaction ID/UTR</span>
+                            <span class="fw-bold h6 mb-0 text-primary">{{ payment.transaction_id }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
+                            <span class="text-muted small">System Status</span>
+                            <span class="badge bg-warning text-dark px-3 py-1">{{ payment.get_status_display }}</span>
+                        </div>
+                        <div class="mt-4">
+                            <h6 class="small fw-bold text-muted text-uppercase mb-2">Order Summary</h6>
+                            <ul class="list-unstyled mb-0">
+                                {% for item in payment.order.items.all %}
+                                <li class="small d-flex justify-content-between mb-1">
+                                    <span>{{ item.quantity }} × {{ item.product_name }}</span>
+                                    <span class="text-muted">₹{{ item.get_subtotal }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Verification Action -->
+            <div class="col-md-6">
+                <!-- Proof Image Preview -->
+                {% if payment.proof_image %}
+                <div class="card shadow-sm border-0 mb-4 overflow-hidden">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="h6 fw-bold mb-0 text-uppercase">Buyer's Screenshot</h5>
+                        <a href="{{ payment.proof_image.url }}" target="_blank" class="btn btn-outline-primary btn-sm px-3 rounded-pill h6 mb-0 border-0">
+                            <i class="bi bi-zoom-in me-1"></i> Full View
+                        </a>
+                    </div>
+                    <div class="card-body p-0 bg-light text-center border-bottom">
+                        <img src="{{ payment.proof_image.url }}" alt="Payment Proof" class="img-fluid" style="max-height: 400px; width: 100%; object-fit: contain;">
+                    </div>
+                    <div class="card-footer bg-white p-4">
+                        <h6 class="fw-bold mb-3 small text-uppercase">Verification Decision</h6>
+                        <form method="POST" action="{% url 'payments:verify_payment' payment.payment_id %}">
+                            {% csrf_token %}
+                            
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="submit" name="action" value="confirm" 
+                                        class="btn btn-warning py-3 fw-bold rounded-pill shadow-sm"
+                                        style="background-color: #ffd814; border-color: #fcd200; font-size: 1.1rem;">
+                                    <i class="bi bi-check-circle-fill me-2"></i> Confirm Payment
+                                </button>
+                                
+                                <button type="button" class="btn btn-outline-danger py-2 rounded-pill small border-0 text-decoration-underline"
+                                        data-bs-toggle="collapse" data-bs-target="#rejectCollapse">
+                                    Rejection Details
+                                </button>
+                            </div>
+
+                            <div class="collapse" id="rejectCollapse">
+                                <div class="bg-danger bg-opacity-10 p-3 rounded-3 mb-3 border border-danger border-opacity-25">
+                                    <label class="form-label col-form-label-sm fw-bold small text-danger"><i class="bi bi-x-circle-fill me-1"></i>REJECTION REASON</label>
+                                    <textarea name="rejection_reason" class="form-control mb-3" rows="3" placeholder="e.g., Wrong UTR provided, screenshot is blurred, amount mismatch..."></textarea>
+                                    <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm w-100 rounded-pill py-2 fw-bold">
+                                        Send Rejection Notice
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-warning border-warning border-opacity-50 h4 py-5 text-center mb-4">
+                    <i class="bi bi-image-fill display-5 d-block mb-3 opacity-50"></i>
+                    No Screenshot Uploaded by Buyer.<br>
+                    <span class="small text-muted fw-normal mt-2">Proceed with caution based on transaction ID only.</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

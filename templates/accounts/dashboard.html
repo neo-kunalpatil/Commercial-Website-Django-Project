@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Your Account" %} - Amazon.in{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4 fw-normal">{% trans "Your Account" %}</h1>
+
+    <!-- 3-column Grid for Dashboard Cards -->
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+        
+        <!-- Orders -->
+        <div class="col">
+            <a href="{% url 'orders:order_history' %}" class="text-decoration-none">
+                <div class="card h-100 border rounded-3 dashboard-card shadow-sm">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="https://m.media-amazon.com/images/G/31/x-locale/cs/help/images/gateway/box-swap-planet-50x50._CB404987189_.png" alt="Orders" class="me-3" style="width: 50px;">
+                        <div>
+                            <h5 class="card-title text-dark fw-normal mb-1">{% trans "Your Orders" %}</h5>
+                            <p class="card-text text-muted small">{% trans "Track, return, or buy things again" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Login & Security -->
+        <div class="col">
+            <a href="#" class="text-decoration-none">
+                <div class="card h-100 border rounded-3 dashboard-card shadow-sm">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="https://m.media-amazon.com/images/G/31/x-locale/cs/help/images/gateway/security-plus-50x50._CB404987189_.png" alt="Security" class="me-3" style="width: 50px;">
+                        <div>
+                            <h5 class="card-title text-dark fw-normal mb-1">{% trans "Login & Security" %}</h5>
+                            <p class="card-text text-muted small">{% trans "Edit login, name, and mobile number" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Prime -->
+        <div class="col">
+            <a href="#" class="text-decoration-none">
+                <div class="card h-100 border rounded-3 dashboard-card shadow-sm">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="https://m.media-amazon.com/images/G/31/x-locale/cs/help/images/gateway/Prime_clear-bg-50x50._CB404987189_.png" alt="Prime" class="me-3" style="width: 50px;">
+                        <div>
+                            <h5 class="card-title text-dark fw-normal mb-1">{% trans "Prime" %}</h5>
+                            <p class="card-text text-muted small">{% trans "View benefits and payment settings" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Addresses -->
+        <div class="col">
+            <a href="#" class="text-decoration-none">
+                <div class="card h-100 border rounded-3 dashboard-card shadow-sm">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="https://m.media-amazon.com/images/G/31/x-locale/cs/help/images/gateway/address-map-pin-50x50._CB404987189_.png" alt="Addresses" class="me-3" style="width: 50px;">
+                        <div>
+                            <h5 class="card-title text-dark fw-normal mb-1">{% trans "Your Addresses" %}</h5>
+                            <p class="card-text text-muted small">{% trans "Edit addresses for orders and gifts" %} <br><strong>({{ addresses_count }} saved)</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Payment Options -->
+        <div class="col">
+            <a href="#" class="text-decoration-none">
+                <div class="card h-100 border rounded-3 dashboard-card shadow-sm">
+                    <div class="card-body d-flex align-items-start">
+                        <img src="https://m.media-amazon.com/images/G/31/x-locale/cs/help/images/gateway/payment-settings-50x50._CB404987189_.png" alt="Payment" class="me-3" style="width: 50px;">
+                        <div>
+                            <h5 class="card-title text-dark fw-normal mb-1">{% trans "Payment Options" %}</h5>
+                            <p class="card-text text-muted small">{% trans "Edit or add payment methods" %}</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Wishlist -->
+        <div class="col">
+            <a href="{% url 'cart:wishlist_view' %}" class="text-decoration-none">
+                <div class="card h-100 border rounded-3 dashboard-card shadow-sm">
+                    <div class="card-body d-flex align-items-start">
+                        <i class="bi bi-suit-heart text-danger me-3 fs-1 opacity-75"></i>
+                        <div>
+                            <h5 class="card-title text-dark fw-normal mt-1 mb-1">{% trans "Your Wish List" %}</h5>
+                            <p class="card-text text-muted small">{% trans "View your saved items" %}<br><strong>({{ wishlist_count }} items)</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+    </div>
+
+    <hr class="text-muted border-dashed my-5">
+
+    <!-- Recent Activity Row -->
+    <div class="row">
+        <!-- Recent Orders Snapshot -->
+        <div class="col-md-8 mb-4">
+            <div class="d-flex justify-content-between align-items-end mb-3">
+                <h3 class="fw-normal mb-0">{% trans "Recent Orders" %}</h3>
+                <a href="{% url 'orders:order_history' %}" class="text-decoration-none small fw-bold">{% trans "View all orders" %}</a>
+            </div>
+            
+            {% if recent_orders %}
+                <div class="list-group list-group-flush border rounded shadow-sm">
+                    {% for order in recent_orders %}
+                    <div class="list-group-item p-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <span class="text-muted small">{% trans "Order Placed" %}</span><br>
+                                <strong>{{ order.created_at|date:"d M Y" }}</strong>
+                            </div>
+                            <div class="col-md-3">
+                                <span class="text-muted small">{% trans "Total" %}</span><br>
+                                <strong>₹{{ order.total_amount }}</strong>
+                            </div>
+                            <div class="col-md-3">
+                                <span class="badge {% if order.status == 'DELIVERED' %}bg-success{% elif order.status == 'CANCELLED' %}bg-danger{% else %}bg-warning text-dark{% endif %} p-2 rounded-pill shadow-sm">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <a href="{% url 'orders:order_detail' order.order_id %}" class="btn btn-sm btn-outline-secondary rounded-pill fw-bold shadow-sm px-3">{% trans "Order Details" %}</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="bg-light p-5 rounded border text-center opacity-75">
+                    <i class="bi bi-box-seam fs-1 text-muted mb-3 d-block"></i>
+                    <h5 class="text-muted">{% trans "You haven't placed any orders yet." %}</h5>
+                    <a href="{% url 'home' %}" class="btn btn-warning mt-3 rounded-pill shadow-sm fw-bold">{% trans "Start Shopping" %}</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Returns & Addresses Snapshot -->
+        <div class="col-md-4">
+            <h5 class="fw-normal mb-4">{% trans "Quick Glance" %}</h5>
+            
+            <!-- Returns Card -->
+            <div class="card mb-3 shadow-sm border-0 bg-light rounded-3">
+                <div class="card-body">
+                    <h6 class="card-title fw-bold text-dark"><i class="bi bi-arrow-return-left text-danger me-2"></i>{% trans "Active Returns" %}</h6>
+                    <p class="card-text mb-1">{% trans "You have" %} <strong>{{ active_returns_count }}</strong> {% trans "returns currently processing." %}</p>
+                    <a href="{% url 'returns:return_list' %}" class="text-decoration-none small text-primary fw-bold">{% trans "View Returns Center &rarr;" %}</a>
+                </div>
+            </div>
+
+            <!-- Default Address Card -->
+            <div class="card shadow-sm border rounded-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="card-title fw-bold text-dark"><i class="bi bi-geo-alt-fill text-primary me-2"></i>{% trans "Default Address" %}</h6>
+                        <a href="#" class="text-decoration-none small">{% trans "Edit" %}</a>
+                    </div>
+                    {% if default_address %}
+                        <address class="small text-muted mb-0 mt-2 lh-sm">
+                            <strong class="text-dark">{{ default_address.full_name }}</strong><br>
+                            {{ default_address.address_line_1 }}<br>
+                            {% if default_address.address_line_2 %}{{ default_address.address_line_2 }}<br>{% endif %}
+                            {{ default_address.city }}, {{ default_address.state }} {{ default_address.pincode }}<br>
+                            {% trans "Phone:" %} {{ default_address.phone }}
+                        </address>
+                    {% else %}
+                        <p class="small text-muted mt-2 mb-0">{% trans "No valid address found." %}</p>
+                        <a href="{% url 'address_add' %}?next={% url 'profile' %}" class="btn btn-sm btn-outline-primary mt-2 rounded-pill px-3 shadow-sm">{% trans "Add Address" %}</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+    }
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% load i18n %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-amazon text-white" style="background-color: #232f3e;">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-shop"></i> Seller Menu</h5>
+    </div>
+    <div class="list-group list-group-flush">
+        <a href="{% url 'seller_dashboard' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'seller_dashboard' %}active fw-bold text-dark border-warning{% endif %}" {% if request.resolver_match.url_name == 'seller_dashboard' %}style="background-color: #f3a847;"{% endif %}>Dashboard</a>
+        
+        <a href="{% url 'seller_profile_update' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'seller_profile_update' or request.resolver_match.url_name == 'seller_payment_setup' %}active fw-bold text-dark border-warning{% endif %}" {% if request.resolver_match.url_name == 'seller_profile_update' or request.resolver_match.url_name == 'seller_payment_setup' %}style="background-color: #f3a847;"{% endif %}>Business Profile</a>
+        
+        <a href="{% url 'product_create' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'product_create' %}active fw-bold text-dark border-warning{% endif %}" {% if request.resolver_match.url_name == 'product_create' %}style="background-color: #f3a847;"{% endif %}>Add Product</a>
+        
+        <a href="{% url 'seller_product_list' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'seller_product_list' %}active fw-bold text-dark border-warning{% endif %}" {% if request.resolver_match.url_name == 'seller_product_list' %}style="background-color: #f3a847;"{% endif %}>Manage Products</a>
+        
+        <a href="{% url 'seller_orders' %}" class="list-group-item list-group-item-action {% if 'seller_order' in request.resolver_match.url_name %}active fw-bold text-dark border-warning{% endif %}" {% if 'seller_order' in request.resolver_match.url_name %}style="background-color: #f3a847;"{% endif %}>Orders & Tracking</a>
+        
+        <a href="{% url 'seller_payments' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'seller_payments' %}active fw-bold text-dark border-warning{% endif %}" {% if request.resolver_match.url_name == 'seller_payments' %}style="background-color: #f3a847;"{% endif %}>Payments & Earnings</a>
+        
+        <a href="{% url 'seller_returns' %}" class="list-group-item list-group-item-action {% if 'seller_return' in request.resolver_match.url_name %}active fw-bold text-dark border-warning{% endif %}" {% if 'seller_return' in request.resolver_match.url_name %}style="background-color: #f3a847;"{% endif %}>Returns</a>
+        
+        <a href="{% url 'seller_stock' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'seller_stock' %}active fw-bold text-dark border-warning{% endif %}" {% if request.resolver_match.url_name == 'seller_stock' %}style="background-color: #f3a847;"{% endif %}>Stock Management</a>
+        
+        <form method="post" action="{% url 'logout' %}" class="list-group-item list-group-item-action p-0 border-0 mt-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link text-decoration-none text-danger w-100 text-start ps-3 fw-bold">Sign Out</button>
+        </form>
+    </div>
+</div>

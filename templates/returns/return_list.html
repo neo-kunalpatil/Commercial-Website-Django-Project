@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Returns Status" %} - Amazon.in{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent px-0 mb-3">
+            <li class="breadcrumb-item"><a href="{% url 'profile' %}" class="text-decoration-none">{% trans "Your Account" %}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Returns Center" %}</li>
+        </ol>
+    </nav>
+
+    <h2 class="fw-normal mb-4">{% trans "Your Returns" %}</h2>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            {% for req in returns %}
+            <div class="card shadow-sm border rounded-3 mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="small text-muted text-uppercase">{% trans "Return Requested" %}</span><br>
+                        <strong>{{ req.created_at|date:"d M Y" }}</strong>
+                    </div>
+                    <div>
+                        <span class="small text-muted text-uppercase">{% trans "Order" %}</span><br>
+                        <a href="{% url 'orders:order_detail' req.order.order_id %}" class="text-decoration-none fw-bold">{{ req.order.order_id|stringformat:"s"|truncatechars:18 }}</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">
+                        {% if req.status == 'REQUESTED' %}
+                            <span class="text-warning text-dark"><i class="bi bi-hourglass-split me-2"></i>{% trans "Approval Pending" %}</span>
+                        {% elif req.status == 'REJECTED' %}
+                            <span class="text-danger"><i class="bi bi-x-circle-fill me-2"></i>{% trans "Return Request Denied" %}</span>
+                        {% else %}
+                            <span class="text-success"><i class="bi bi-arrow-return-left me-2"></i>{{ req.get_status_display }}</span>
+                        {% endif %}
+                    </h5>
+                    
+                    {% if req.status != 'REJECTED' %}
+                    <div class="tracking-pipeline d-flex justify-content-between position-relative mt-4 mb-4" style="height: 60px;">
+                        <div class="progress position-absolute" style="height: 6px; width: 100%; top: 15px; z-index: 1;">
+                            {% if req.status == 'REQUESTED' %}{% widthratio 0 5 100 as progress_width %}
+                            {% elif req.status == 'APPROVED' %}{% widthratio 1 5 100 as progress_width %}
+                            {% elif req.status == 'PICKUP_SCHEDULED' %}{% widthratio 2 5 100 as progress_width %}
+                            {% elif req.status == 'PICKED_UP' %}{% widthratio 3 5 100 as progress_width %}
+                            {% elif req.status == 'REFUND_PROCESSED' %}{% widthratio 4 5 100 as progress_width %}
+                            {% elif req.status == 'REFUNDED' %}{% widthratio 5 5 100 as progress_width %}
+                            {% endif %}
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_width }}%;"></div>
+                        </div>
+                        
+                        {% for step_id, step_name in req.STATUS_CHOICES %}
+                            {% if step_id != 'REJECTED' %}
+                                <div class="text-center position-relative" style="z-index: 2; width: 16%;">
+                                    <div class="rounded-circle {% if step_id == req.status or progress_width >= forloop.counter0|add:'0' %}bg-success{% else %}bg-secondary{% endif %} mx-auto text-white d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; border: 4px solid white;">
+                                    </div>
+                                    <div class="mt-2 text-muted" style="font-size: 0.70rem; line-height: 1.1;">
+                                        {{ step_name }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <!-- Better static timeline fallback -->
+                    <div class="d-flex justify-content-between text-muted small mt-4 pt-3 border-top">
+                        <span><strong>Status:</strong> {{ req.get_status_display }}</span>
+                        <span><strong>Last Updated:</strong> {{ req.updated_at|date:"d M, h:i A" }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <p class="mb-1 fw-bold">{% trans "Reason:" %} <span class="fw-normal text-muted">{{ req.get_reason_display|default:req.reason }}</span></p>
+                    {% if req.comment %}
+                        <p class="small text-secondary mb-0 fst-italic">"{{ req.comment }}"</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+                <div class="text-center p-5 bg-light rounded border opacity-75">
+                    <i class="bi bi-arrow-return-left fs-1 text-muted mb-3 d-block"></i>
+                    <h5 class="text-muted fw-normal">{% trans "You do not have any active or past returns." %}</h5>
+                    <a href="{% url 'orders:order_history' %}" class="btn btn-warning mt-3 rounded-pill fw-bold shadow-sm px-4">{% trans "View Your Orders" %}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

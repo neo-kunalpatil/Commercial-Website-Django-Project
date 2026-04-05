@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Payment Submission Report - BuySphere{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-8 col-lg-7">
+        
+        <!-- Header Section -->
+        <div class="text-center mb-4">
+            <div class="display-1 text-success mb-2"><i class="bi bi-file-earmark-check"></i></div>
+            <h2 class="fw-bold text-success">Payment Submitted Successfully</h2>
+            <p class="text-muted lead">Your transaction details have been recorded for verification.</p>
+        </div>
+
+        <!-- Payment Report / Receipt Section -->
+        <div class="card shadow-sm border-0 rounded-3 mb-5 overflow-hidden">
+            <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-receipt me-2"></i>PAYMENT REPORT</h5>
+                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill font-monospace">STATUS: PENDING VERIFICATION</span>
+            </div>
+            <div class="card-body p-4 p-md-5 bg-white border">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Transaction Details</small>
+                        <div class="mb-3">
+                            <label class="small text-muted">Order ID:</label>
+                            <div class="fw-bold font-monospace text-dark">#{{ order.order_id|truncatechars:18 }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted">UPI Reference / UTR:</label>
+                            <div class="fw-bold font-monospace text-primary fs-5">{{ order.payment.transaction_id }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted">Payment Method:</label>
+                            <div class="fw-bold text-dark"><i class="bi bi-phone me-1"></i> Direct UPI Transfer</div>
+                        </div>
+                        <div class="mb-0">
+                            <label class="small text-muted">Date & Time:</label>
+                            <div class="text-dark">{{ order.payment.created_at|date:"d M Y, h:i A" }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 border-start ps-md-4">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Buyer & Seller Info</small>
+                        <div class="mb-3">
+                            <label class="small text-muted">Bill To (Buyer):</label>
+                            <div class="fw-bold text-dark">{{ request.user.username|capfirst }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted">Paid To (Seller):</label>
+                            <div class="fw-bold text-dark">{{ order.seller.sellerprofile.business_name|default:order.seller.username }}</div>
+                        </div>
+                        <hr class="my-3 opacity-50">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-muted">Total Paid:</span>
+                            <span class="h3 mb-0 fw-bold text-success">₹{{ order.total_amount }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proof Preview (Miniature Thumbnail) -->
+                {% if order.payment.proof_image %}
+                <div class="mt-5 pt-4 border-top">
+                    <div class="d-flex align-items-center bg-light p-3 rounded-3 border">
+                        <div class="me-3">
+                            <img src="{{ order.payment.proof_image.url }}" class="rounded shadow-sm" style="width: 60px; height: 60px; object-fit: cover;">
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold small text-uppercase">Payment Proof Image Submitted</h6>
+                            <p class="mb-0 extra-small text-muted">Our team/seller will review this screenshot to confirm the amount.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="card-footer bg-light p-4 text-center border-top">
+                <p class="small text-muted mb-3"><i class="bi bi-info-circle-fill me-1"></i> Once verified, your order will be confirmed and a tax invoice will be available for download.</p>
+                
+                    <button onclick="window.print()" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm no-print">
+                        <i class="bi bi-printer me-2"></i> Print / Save Report
+                    </button>
+                    <a href="{% url 'payments:receipt_view' order.order_id %}" target="_blank" class="btn btn-dark rounded-pill px-4 fw-bold no-print">
+                        <i class="bi bi-file-earmark-pdf me-2"></i> View Sample Receipt
+                    </a>
+                    <a href="{% url 'orders:order_detail' order.order_id %}" class="btn btn-outline-dark rounded-pill px-4 fw-bold no-print">
+                        <i class="bi bi-geo-alt me-2"></i> Track My Order
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center no-print">
+            <a href="{% url 'home' %}" class="btn btn-link text-decoration-none text-muted fw-bold">
+                <i class="bi bi-house-door me-1"></i> Continue Shopping
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .extra-small { font-size: 0.7rem; }
+    @media print {
+        .no-print { display: none !important; }
+        body { background: white !important; }
+        .card { border: 1px solid #ddd !important; box-shadow: none !important; }
+    }
+</style>
+{% endblock %}

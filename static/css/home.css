@@ -1,0 +1,68 @@
+/* Home Page Styles */
+.hero-slider-container {
+    position: relative;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.hero-slider-container img {
+    width: 100%;
+    object-fit: cover;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+}
+
+.home-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.home-card-grid img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+}
+
+.home-card-grid span {
+    font-size: 0.8rem;
+    color: #0f1111;
+}
+
+.promo-row {
+    margin-top: -250px;
+    position: relative;
+    z-index: 5;
+    padding: 0 20px;
+}
+
+.horizontal-strip {
+    overflow-x: auto;
+    display: flex;
+    gap: 15px;
+    padding-bottom: 10px;
+}
+
+.horizontal-strip::-webkit-scrollbar {
+    height: 8px;
+}
+.horizontal-strip::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.sign-in-strip {
+    background-color: white;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    padding: 30px;
+    margin: 40px 0;
+}
+
+.sign-in-strip .btn {
+    width: 250px;
+    margin: 10px auto;
+}

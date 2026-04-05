@@ -1,0 +1,85 @@
+/* Product Page & Drawer Styles */
+
+/* SIDE DRAWER */
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 1040;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.drawer-overlay.open {
+    display: block;
+    opacity: 1;
+}
+
+.side-drawer {
+    position: fixed;
+    top: 0;
+    left: -365px;
+    width: 365px;
+    height: 100vh;
+    background-color: white;
+    z-index: 1050;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+}
+
+.side-drawer.open {
+    left: 0;
+}
+
+.drawer-header {
+    background-color: #232f3e;
+    color: white;
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.drawer-section {
+    border-bottom: 1px solid #d5d9d9;
+    padding: 15px 0;
+}
+
+.drawer-section-title {
+    font-weight: bold;
+    padding: 0 20px 10px 20px;
+    font-size: 1.1rem;
+}
+
+.drawer-item {
+    display: block;
+    padding: 10px 20px;
+    color: #111;
+    font-size: 0.95rem;
+}
+
+.drawer-item:hover {
+    background-color: #eaeded;
+    text-decoration: none;
+    color: #111;
+}
+
+/* PRODUCT LISTINGS */
+.product-list-card {
+    transition: all 0.2s;
+}
+
+.product-list-card:hover {
+    box-shadow: 0 2px 5px 0 rgba(213,217,217,.5);
+}
+
+.btn-buy-box {
+    background-color: #f7ca00;
+    border-color: #f2c200;
+    border-radius: 20px;
+    box-shadow: 0 2px 5px 0 rgba(213,217,217,.5);
+}

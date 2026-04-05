@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Product | Amazon Marketplace{% endblock %}
+
+{% block content %}
+<div class="row mt-3">
+    <div class="col-md-3 mb-4">
+        {% include 'includes/seller_sidebar.html' %}
+    </div>
+    <div class="col-md-9 mt-3 mb-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'seller_dashboard' %}">Seller Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'seller_product_list' %}">Inventory</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ action }} Product</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="card-title mb-4">{{ action }} Product</h3>
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Product Name <span class="text-danger">*</span></label>
+                        {{ form.name }}
+                        <div class="text-danger small">{{ form.name.errors }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Category</label>
+                            {{ form.category }}
+                            <div class="text-danger small">{{ form.category.errors }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Price URL (₹) <span class="text-danger">*</span></label>
+                            {{ form.price }}
+                            <div class="text-danger small">{{ form.price.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description <span class="text-danger">*</span></label>
+                        {{ form.description }}
+                        <div class="text-danger small">{{ form.description.errors }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Stock Quantity <span class="text-danger">*</span></label>
+                            {{ form.stock }}
+                            <div class="text-danger small">{{ form.stock.errors }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Active Status</label>
+                            <div class="form-check mt-2">
+                                {{ form.available }}
+                                <label class="form-check-label" for="{{ form.available.id_for_label }}">
+                                    Make this product visible to buyers
+                                </label>
+                            </div>
+                            <div class="text-danger small">{{ form.available.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 bg-light p-3 rounded border">
+                        <label class="form-label fw-bold">Product Image <span class="text-danger">*</span></label>
+                        {{ form.image }}
+                        <div class="text-muted small mt-1">Upload a clear primary image for your product (JPG/PNG).</div>
+                        <div class="text-danger small">{{ form.image.errors }}</div>
+                    </div>
+
+                    <hr>
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'seller_product_list' %}" class="btn btn-outline-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-amazon px-4">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

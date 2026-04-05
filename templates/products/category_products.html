@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Amazon.in: {{ category.name }}
+{% endblock %}
+
+{% block content %}
+<!-- Search Header Strip -->
+<div class="row m-0 bg-white border-bottom shadow-sm">
+    <div class="col-12 py-2 px-4 d-flex justify-content-between align-items-center shadow-sm" style="box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <span class="fs-5 fw-bold">{{ category.name }}</span>
+        <span class="text-muted small">1-{{ products.count }} of {{ products.count }} results</span>
+    </div>
+</div>
+
+<div class="container-fluid flex-grow-1 bg-white pt-3 ps-3">
+    <div class="row mt-2">
+        
+        <!-- Left Sidebar Filter -->
+        <div class="col-md-3 col-lg-2 ps-3 mb-4 d-none d-md-block" style="border-right: 1px solid #ddd; min-height: 80vh;">
+            
+            <div class="fw-bold mb-1">&lsaquo; Any Department</div>
+            <ul class="list-unstyled small mb-4 lh-lg ps-3">
+                <li><span class="fw-bold text-dark">{{ category.name }}</span></li>
+            </ul>
+
+            <div class="fw-bold mb-1 mt-3">Other Categories</div>
+            <ul class="list-unstyled small mb-4 lh-lg ps-2">
+                {% for cat in categories|default:"" %}
+                    {% if cat.slug != category.slug %}
+                    <li>
+                        <a href="{% url 'category_products' cat.slug %}" class="text-decoration-none text-dark hover-orange">
+                            {{ cat.name }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Main Results Grid -->
+        <div class="col-md-9 col-lg-10 px-4">
+            
+            <!-- Products View -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3 mb-5">
+                {% for product in products %}
+                    <div class="col">
+                        {% include 'includes/product_card.html' with product=product %}
+                    </div>
+                {% empty %}
+                    <div class="col-12 py-5 text-center w-100">
+                        <i class="bi bi-box2-heart fs-1 text-muted mb-3 d-block"></i>
+                        <h4 class="fw-bold">No products found in {{ category.name }} department</h4>
+                        <p class="text-muted">Check back later as our sellers are actively adding new items!</p>
+                    </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-orange:hover {
+    color: #c7511f !important;
+}
+</style>
+{% endblock %}

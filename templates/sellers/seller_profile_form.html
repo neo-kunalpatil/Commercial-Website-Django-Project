@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Business Settings | Amazon Marketplace{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 mt-3 mb-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'seller_dashboard' %}">Seller Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Business Settings</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="card-title mb-4">Edit Seller Profile</h3>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Business Name <span class="text-danger">*</span></label>
+                            {{ form.business_name }}
+                            <div class="text-danger small">{{ form.business_name.errors }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">GST Number</label>
+                            {{ form.gst_number }}
+                            <div class="text-danger small">{{ form.gst_number.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Business Email</label>
+                            {{ form.business_email }}
+                            <div class="text-danger small">{{ form.business_email.errors }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Business Phone</label>
+                            {{ form.business_phone }}
+                            <div class="text-danger small">{{ form.business_phone.errors }}</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Business Address</label>
+                        {{ form.business_address }}
+                        <div class="text-danger small">{{ form.business_address.errors }}</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label fw-bold">City</label>
+                            {{ form.city }}
+                            <div class="text-danger small">{{ form.city.errors }}</div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label fw-bold">State</label>
+                            {{ form.state }}
+                            <div class="text-danger small">{{ form.state.errors }}</div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label fw-bold">Pincode</label>
+                            {{ form.pincode }}
+                            <div class="text-danger small">{{ form.pincode.errors }}</div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'seller_dashboard' %}" class="btn btn-outline-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-amazon px-4">Save Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

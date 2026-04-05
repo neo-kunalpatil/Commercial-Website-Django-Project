@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Product | Amazon Marketplace{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 mt-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'seller_dashboard' %}">Seller Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'seller_product_list' %}">Inventory</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Delete Product</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow border-danger border-opacity-50">
+            <div class="card-header bg-danger bg-opacity-10 text-danger py-3">
+                <h4 class="mb-0"><i class="bi bi-exclamation-triangle-fill"></i> Confirm Deletion</h4>
+            </div>
+            <div class="card-body p-4 text-center">
+                <p class="fs-5 mb-4">Are you absolutely sure you want to delete the product <strong>"{{ product.name }}"</strong>?</p>
+                <div class="alert alert-warning text-start">
+                    <strong>Warning:</strong> This action cannot be undone. Once deleted, this product will be permanently removed from the catalog and any existing carts.
+                </div>
+                
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'seller_product_list' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-danger px-4">Yes, Delete Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

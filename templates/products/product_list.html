@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if search_query %}Amazon.in : {{ search_query }}{% else %}Amazon.in : All Products{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Search Header Strip -->
+<div class="row m-0 bg-white border-bottom shadow-sm">
+    <div class="col-12 py-2 px-4 shadow-sm" style="box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        {% if search_query %}
+            <span class="fw-bold">1-{{ products.count }} of {{ products.count }} results for <span class="text-danger">"{{ search_query }}"</span></span>
+        {% else %}
+            <span class="fw-bold">Showing all available products</span>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container-fluid flex-grow-1 bg-white pt-3 ps-3">
+    <div class="row mt-2">
+        
+        <!-- Classic Amazon Left Sidebar Filter -->
+        <div class="col-md-3 col-lg-2 ps-3 mb-4 d-none d-md-block" style="border-right: 1px solid #ddd; min-height: 80vh;">
+            
+            <div class="fw-bold mb-1">Department</div>
+            <ul class="list-unstyled small mb-4 lh-lg">
+                <li><a href="{% url 'product_list' %}" class="text-decoration-none {% if not current_category %}fw-bold text-dark{% else %}text-dark{% endif %}">Any Department</a></li>
+                {% for cat in categories|default:"" %}
+                <li>
+                    <a href="?category={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" 
+                       class="text-decoration-none {% if current_category == cat.slug %}fw-bold text-dark{% else %}text-dark{% endif %}">
+                        {{ cat.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="fw-bold mb-1 mt-3">Customer Reviews</div>
+            <ul class="list-unstyled small mb-4 lh-lg">
+                <li><a href="#" class="text-decoration-none text-dark"><i class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i><i class="bi bi-star text-warning"></i> & Up</a></li>
+                <li><a href="#" class="text-decoration-none text-dark"><i class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i><i class="bi bi-star text-warning"></i><i class="bi bi-star text-warning"></i> & Up</a></li>
+            </ul>
+            
+            <div class="fw-bold mb-1 mt-3">Price</div>
+            <ul class="list-unstyled small mb-4 lh-lg">
+                <li><a href="#" class="text-dark text-decoration-none">Under ₹500</a></li>
+                <li><a href="#" class="text-dark text-decoration-none">₹500 - ₹1,000</a></li>
+                <li><a href="#" class="text-dark text-decoration-none">₹1,000 - ₹5,000</a></li>
+                <li><a href="#" class="text-dark text-decoration-none">Over ₹5,000</a></li>
+            </ul>
+            
+            <div class="fw-bold mb-1 mt-3">Pay On Delivery</div>
+            <div class="form-check small mb-4">
+                <input class="form-check-input" type="checkbox" value="" id="codCheck">
+                <label class="form-check-label text-dark" for="codCheck">Eligible for Pay On Delivery</label>
+            </div>
+            
+        </div>
+
+        <!-- Main Results Grid -->
+        <div class="col-md-9 col-lg-10 px-4">
+            
+            <!-- Sort Control -->
+            <div class="d-flex justify-content-end mb-4">
+                <form method="get" class="d-flex align-items-center bg-light p-1 rounded border shadow-sm" style="border-radius: 8px;">
+                    {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+                    {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+                    
+                    <span class="small me-2 ps-2 text-dark" style="font-size: 13px;">Sort by:</span>
+                    <select name="sort" class="form-select form-select-sm border-0 bg-light shadow-none fw-semibold" onchange="this.form.submit()" style="font-size: 13px;">
+                        <option value="" {% if not current_sort %}selected{% endif %}>Featured</option>
+                        <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    </select>
+                </form>
+            </div>
+
+            <!-- Products View -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3 mb-5">
+                {% for product in products %}
+                    <div class="col">
+                        {% include 'includes/product_card.html' with product=product %}
+                    </div>
+                {% empty %}
+                    <div class="col-12 py-5 text-center w-100">
+                        <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
+                        <h4 class="fw-bold">No results for {% if search_query %}"{{ search_query }}"{% else %}this filter{% endif %}</h4>
+                        <p class="text-muted">Try checking your spelling or use more general terms</p>
+                        <a href="{% url 'product_list' %}" class="text-decoration-none text-info">Clear all filters</a>
+                    </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

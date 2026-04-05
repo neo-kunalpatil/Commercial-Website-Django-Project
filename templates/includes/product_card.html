@@ -1,0 +1,53 @@
+<!-- Product Card Item -->
+<div class="card h-100 border-0 product-list-card rounded-1 overflow-hidden">
+    <a href="{% url 'product_detail' product.pk %}" class="text-decoration-none">
+        
+        <!-- Image Box -->
+        <div class="bg-light d-flex justify-content-center align-items-center position-relative p-3" style="height: 220px;">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="img-fluid h-100 object-fit-contain mix-blend-multiply" alt="{{ product.name }}">
+            {% else %}
+                <div class="text-muted"><i class="bi bi-image fs-1"></i></div>
+            {% endif %}
+            
+            {% if product.price < 500 %}
+                <span class="position-absolute top-0 start-0 badge bg-danger text-white rounded-0 px-2 py-1 mt-2">Deal of the Day</span>
+            {% endif %}
+        </div>
+
+        <!-- Description Box -->
+        <div class="card-body p-2 d-flex flex-column">
+            
+            <!-- Title -->
+            <h2 class="fs-6 fw-normal text-dark text-truncate mb-1" style="font-size: 15px;">{{ product.name }}</h2>
+            
+            <!-- Ratings -->
+            <div class="text-warning mb-1" style="font-size: 0.8rem;">
+                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                <span class="text-info text-decoration-none ms-1">1,204</span>
+            </div>
+            
+            <!-- Pricing -->
+            <div class="mt-auto">
+                <div class="d-flex align-items-start">
+                    <span class="fs-6 mt-1 me-1 text-dark">₹</span>
+                    <span class="fs-3 fw-medium text-dark lh-1">{{ product.price }}</span>
+                </div>
+                
+                {% if product.stock > 0 %}
+                    <p class="small text-muted mb-1 mt-1">Get it by Tomorrow</p>
+                    <p class="small fw-bold text-dark mb-0">FREE Delivery by Amazon</p>
+                {% else %}
+                    <p class="small text-danger fw-bold mb-1 mt-1">Temporarily out of stock.</p>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+</div>
+
+<style>
+/* CSS to make images blend nicely if they have white backgrounds */
+.mix-blend-multiply {
+    mix-blend-mode: multiply;
+}
+</style>

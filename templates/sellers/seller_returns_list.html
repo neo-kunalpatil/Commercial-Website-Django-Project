@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Returns | Amazon Marketplace{% endblock %}
+
+{% block content %}
+<div class="row mt-3">
+    <!-- SELLER SIDEBAR -->
+    <div class="col-md-3 mb-4">
+        {% include 'includes/seller_sidebar.html' %}
+    </div>
+
+    <!-- SELLER CONTENT -->
+    <div class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2>Manage Returns (RMA)</h2>
+                <p class="text-muted">Review, approve, or reject return requests from your buyers.</p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Request ID</th>
+                                <th>Order</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th class="pe-4 text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ret in returns %}
+                            <tr>
+                                <td class="ps-4 fw-bold">#RMA-{{ ret.id }}<br><small class="text-muted fw-normal">{{ ret.created_at|date:"M d, Y" }}</small></td>
+                                <td><a href="{% url 'seller_order_detail' ret.order.id %}" class="fw-bold" target="_blank">Order #{{ ret.order.id }}</a><br><small class="text-muted">{{ ret.order.buyer.username }}</small></td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;" title="{{ ret.reason }}">
+                                        {{ ret.get_reason_display }}
+                                    </div>
+                                    <small class="text-muted d-block text-truncate" style="max-width: 200px;">{{ ret.comment }}</small>
+                                </td>
+                                <td>
+                                    {% if ret.status == 'REQUESTED' %}
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Pending Decision</span>
+                                    {% elif ret.status == 'APPROVED' %}
+                                        <span class="badge bg-info"><i class="bi bi-check-circle"></i> Approved (Pending Pickup)</span>
+                                    {% elif ret.status == 'PICKUP_SCHEDULED' or ret.status == 'PICKED_UP' %}
+                                        <span class="badge bg-primary"><i class="bi bi-truck"></i> Logicstics in Progress</span>
+                                    {% elif ret.status == 'REFUND_PROCESSED' or ret.status == 'REFUNDED' %}
+                                        <span class="badge bg-success"><i class="bi bi-cash-coin"></i> Refund Completed</span>
+                                    {% elif ret.status == 'REJECTED' %}
+                                        <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Rejected</span>
+                                    {% endif %}
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <button class="btn btn-sm btn-outline-amazon" data-bs-toggle="modal" data-bs-target="#returnModal{{ ret.id }}">Review</button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Return Review Modal -->
+                            <div class="modal fade" id="returnModal{{ ret.id }}" tabindex="-1" aria-labelledby="returnModalLabel{{ ret.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="return_id" value="{{ ret.id }}">
+                                            
+                                            <div class="modal-header bg-light">
+                                                <h5 class="modal-title fw-bold" id="returnModalLabel{{ ret.id }}">Review Return #RMA-{{ ret.id }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                <div class="mb-3">
+                                                    <h6 class="fw-bold text-muted text-uppercase" style="font-size: 0.8rem;">Buyer Information</h6>
+                                                    <p class="mb-1 fw-semibold">{{ ret.order.buyer.get_full_name|default:ret.order.buyer.username }}</p>
+                                                    <p class="small text-muted mb-0">Order: #{{ ret.order.id }} | Amount: ₹{{ ret.order.total_amount }}</p>
+                                                </div>
+                                                <hr>
+                                                <div class="mb-3">
+                                                    <h6 class="fw-bold text-muted text-uppercase" style="font-size: 0.8rem;">Return Reason</h6>
+                                                    <p class="mb-1 fw-bold text-danger">{{ ret.get_reason_display }}</p>
+                                                    <div class="bg-light p-3 rounded fst-italic text-muted">
+                                                        "{{ ret.comment }}"
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mb-3">
+                                                    <h6 class="fw-bold mb-2">Update Decision <span class="text-danger">*</span></h6>
+                                                    <select name="status" class="form-select" required>
+                                                        <option value="REQUESTED" {% if ret.status == 'REQUESTED' %}selected{% endif %}>REQUESTED (Pending Decision)</option>
+                                                        <option value="APPROVED" {% if ret.status == 'APPROVED' %}selected{% endif %}>APPROVED (Accept Return)</option>
+                                                        <option value="PICKUP_SCHEDULED" {% if ret.status == 'PICKUP_SCHEDULED' %}selected{% endif %}>PICKUP SCHEDULED</option>
+                                                        <option value="PICKED_UP" {% if ret.status == 'PICKED_UP' %}selected{% endif %}>PICKED UP (Received from Courier)</option>
+                                                        <option value="REFUND_PROCESSED" {% if ret.status == 'REFUND_PROCESSED' %}selected{% endif %}>REFUND PROCESSED</option>
+                                                        <option value="REFUNDED" {% if ret.status == 'REFUNDED' %}selected{% endif %}>REFUNDED (Completed)</option>
+                                                        <option value="REJECTED" {% if ret.status == 'REJECTED' %}selected{% endif %}>REJECTED (Deny Return)</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div>
+                                                    <h6 class="fw-bold mb-2">Seller Notes (Optional)</h6>
+                                                    <textarea name="admin_notes" class="form-control" rows="2" placeholder="Send a message/reason to the buyer...">{{ ret.admin_notes|default:'' }}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-amazon fw-bold px-4">Save Decision</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Modal -->
+                            
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted mb-3">
+                                        <i class="bi bi-box-arrow-in-down fs-1"></i>
+                                    </div>
+                                    <h5>No return requests</h5>
+                                    <p>You have no pending or past return tickets.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

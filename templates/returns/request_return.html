@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Request Return" %} - Amazon.in{% endblock %}
+
+{% block content %}
+<div class="container my-5 max-w-md mx-auto" style="max-width: 600px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent px-0 mb-3">
+            <li class="breadcrumb-item"><a href="{% url 'profile' %}" class="text-decoration-none">{% trans "Your Account" %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'orders:order_detail' order.order_id %}" class="text-decoration-none">{% trans "Order Details" %}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Request Return" %}</li>
+        </ol>
+    </nav>
+    <h2 class="fw-bold mb-4">{% trans "Request Return or Replacement" %}</h2>
+
+    <div class="card shadow-sm border rounded-3 mb-4">
+        <div class="card-body bg-light">
+            <h6 class="fw-bold mb-1">{% trans "Order #" %}{{ order.order_id|stringformat:"s"|truncatechars:18 }}</h6>
+            <p class="text-muted small mb-0">{% trans "Delivered on" %} {{ order.updated_at|date:"d F Y" }}</p>
+        </div>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="{{ form.reason.id_for_label }}" class="form-label fw-bold">{% trans "Why are you returning this?" %}</label>
+            {{ form.reason }}
+        </div>
+        <div class="mb-4">
+            <label for="{{ form.comment.id_for_label }}" class="form-label fw-bold">{% trans "Comments (optional)" %}</label>
+            {{ form.comment }}
+            <div class="form-text">{% trans "Please provide any additional details that will help us process your return faster." %}</div>
+        </div>
+        
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-warning rounded-pill shadow-sm py-2 fw-bold">{% trans "Submit Return Request" %}</button>
+            <a href="{% url 'orders:order_detail' order.order_id %}" class="btn btn-link text-decoration-none text-dark fw-bold mt-2">{% trans "Cancel" %}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

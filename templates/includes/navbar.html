@@ -1,0 +1,117 @@
+{% load i18n %}
+<!-- Amazon Style Navbar -->
+<header>
+    <!-- Top Nav Belt -->
+    <div class="nav-belt buysphere-belt">
+        <!-- Logo -->
+        <a href="{% url 'home' %}" class="nav-sprite fs-4 fw-bold me-2 buysphere-logo">
+            <span class="logo-buy">Buy</span><span class="logo-sphere">Sphere</span>
+        </a>
+
+        <!-- Location -->
+        <div class="nav-sprite d-none d-md-flex align-items-end lh-1 pe-2 buysphere-menu-item p-1">
+            <i class="bi bi-geo-alt fs-5 me-1 text-white"></i>
+            <div class="d-flex flex-column text-white">
+                <span class="text-white opacity-75" style="font-size: 0.75rem;">Delivering to Pune 411004</span>
+                <span class="fw-bold" style="font-size: 0.85rem;">Update location</span>
+            </div>
+        </div>
+
+        <!-- Central Search Bar -->
+        <form action="{% url 'product_list' %}" method="GET" class="search-belt buysphere-search w-100 mx-3">
+            <select name="category" class="form-select w-auto shadow-none rounded-start border-0 fw-semibold bg-light" style="max-width: 60px;">
+                <option value="">All</option>
+                {% for cat in categories|default:"" %}
+                    <option value="{{ cat.slug }}" {% if current_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="q" value="{{ search_query|default:'' }}" class="form-control shadow-none border-0 px-3" placeholder="Search BuySphere">
+            <button type="submit" class="btn rounded-end border-0" style="background-color: #6366F1; color: white;">
+                <i class="bi bi-search fs-5"></i>
+            </button>
+        </form>
+
+        <!-- Right Side Links -->
+        <div class="d-flex align-items-center">
+            <!-- Language Form -->
+            <div class="nav-sprite px-2 d-none d-lg-flex align-items-center fw-bold buysphere-menu-item p-1">
+                <form action="{% url 'set_language' %}" method="post" id="language-form" class="m-0 p-0 d-flex align-items-center">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.path }}">
+                    <img src="https://flagcdn.com/w20/in.png" alt="IN" class="me-1 border" style="width:20px; height:15px;">
+                    <select name="language" onchange="document.getElementById('language-form').submit();" class="form-select form-select-sm shadow-none border-0 fw-bold px-1 bg-transparent text-white" style="width: auto; cursor: pointer;">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% for language in LANGUAGES %}
+                            <option value="{{ language.0 }}"{% if language.0 == LANGUAGE_CODE %} selected{% endif %} class="text-dark">
+                                {{ language.0|upper }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+            <!-- Account & Lists Dropdown -->
+            <div class="dropdown">
+                <div class="nav-sprite px-2 d-none d-md-flex flex-column lh-1 buysphere-menu-item p-2" style="cursor: pointer;" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="text-white opacity-75" style="font-size: 0.75rem;">
+                        {% if user.is_authenticated %}{% trans "Hello," %} {{ user.username }}{% else %}{% trans "Hello, sign in" %}{% endif %}
+                    </span>
+                    <span class="fw-bold d-flex align-items-center text-white" style="font-size: 0.85rem;">
+                        {% trans "Account" %} <i class="bi bi-caret-down-fill ms-1" style="font-size: 0.6rem;"></i>
+                    </span>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="accountDropdown" style="width: 250px;">
+                    {% if user.is_authenticated %}
+                        <li><h6 class="dropdown-header text-dark fw-bold px-3">{% trans "Your Account" %}</h6></li>
+                        <li><a class="dropdown-item px-3 py-2" href="{% url 'profile' %}">{% trans "Account Dashboard" %}</a></li>
+                        <li><a class="dropdown-item px-3 py-2" href="{% url 'orders:order_history' %}">{% trans "Your Orders" %}</a></li>
+                        <li><a class="dropdown-item px-3 py-2" href="{% url 'returns:return_list' %}">{% trans "Returns Center" %}</a></li>
+                        <li><a class="dropdown-item px-3 py-2" href="{% url 'cart:wishlist_view' %}">{% trans "Your Wish List" %}</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="post" action="{% url 'logout' %}" class="m-0 p-0">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item px-3 py-2 text-danger fw-bold">{% trans "Sign Out" %}</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li>
+                            <div class="px-3 py-3 text-center">
+                                <a href="{% url 'login' %}" class="btn text-white w-100 fw-bold rounded shadow-sm py-2" style="background-color: #6366F1;">{% trans "Sign in" %}</a>
+                                <p class="small text-muted mt-3 mb-0">{% trans "New customer?" %} <a href="{% url 'role_select' %}" class="text-decoration-none fw-bold" style="color: #6366F1;">{% trans "Start here." %}</a></p>
+                            </div>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Returns & Orders -->
+            <a href="{% url 'orders:order_history' %}" class="nav-sprite px-3 d-none d-lg-flex flex-column lh-1 text-decoration-none text-white buysphere-menu-item p-2">
+                <span class="text-white opacity-75" style="font-size: 0.75rem;">{% trans "Returns" %}</span>
+                <span class="fw-bold" style="font-size: 0.85rem;">{% trans "& Orders" %}</span>
+            </a>
+
+            <!-- Cart -->
+            <a href="{% url 'cart:cart_detail' %}" class="nav-sprite px-2 d-flex align-items-end text-decoration-none text-white mx-1 buysphere-menu-item p-2">
+                <div class="cart-icon me-1 position-relative">
+                    <i class="bi bi-cart3 fs-3 buysphere-cart-icon text-white"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                        {{ cart_item_count|default:0 }}
+                    </span>
+                </div>
+                <span class="fw-bold d-none d-md-inline" style="position: relative; top: -2px;">{% trans "Cart" %}</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Bottom Nav Main -->
+    <div class="nav-main fw-semibold" style="font-size: 0.9rem;">
+        <a href="#" id="open-drawer-btn"><i class="bi bi-list fs-5 me-1 align-middle"></i>{% trans "All" %}</a>
+        {% for cat in categories|default:""|slice:":10" %}
+            <a href="{% url 'category_products' cat.slug %}">{{ cat.name }}</a>
+        {% endfor %}
+        <a href="{% url 'seller_dashboard' %}">{% trans "Sell" %}</a>
+        <a href="#">{% trans "Amazon Pay" %}</a>
+    </div>
+</header>

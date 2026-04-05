@@ -1,0 +1,61 @@
+{% load i18n %}
+<div class="card mb-3 shadow-sm border-0 rounded-3 dashboard-card">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+        <div class="d-none d-md-block">
+            <span class="text-muted small text-uppercase">{% trans "Order Placed" %}</span><br>
+            <span class="fw-bold">{{ order.created_at|date:"d F Y" }}</span>
+        </div>
+        <div>
+            <span class="text-muted small text-uppercase">{% trans "Total" %}</span><br>
+            <span class="fw-bold">₹{{ order.total_amount }}</span>
+        </div>
+        <div class="d-none d-lg-block">
+            <span class="text-muted small text-uppercase">{% trans "Order #" %}</span><br>
+            <span class="fw-bold">{{ order.order_id|stringformat:"s"|truncatechars:18 }}</span>
+        </div>
+        <div class="d-flex flex-column gap-2 text-md-end">
+            <a href="{% url 'orders:order_detail' order.order_id %}" class="btn btn-outline-primary btn-sm rounded-pill fw-bold px-3">{% trans "View order details" %}</a>
+            {% if order.status != 'PENDING_PAYMENT' and order.status != 'CANCELLED' %}
+            <a href="{% url 'payments:receipt_view' order.order_id %}" target="_blank" class="btn btn-outline-secondary btn-sm rounded-pill fw-bold px-3"><i class="bi bi-file-earmark-pdf"></i> {% trans "Invoice" %}</a>
+            {% endif %}
+            
+            {% if order.status == 'DELIVERED' or order.status == 'PLACED' or order.status == 'CONFIRMED' %}
+                {% if order.return_request %}
+                    <a href="{% url 'returns:return_list' %}" class="btn btn-warning btn-sm rounded-pill fw-bold px-3 text-dark">{% trans "Track Return" %}</a>
+                {% else %}
+                    <a href="{% url 'returns:request_return' order.order_id %}" class="btn btn-outline-danger btn-sm rounded-pill fw-bold px-3">{% trans "Return Items" %}</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        <h5 class="fw-bold">
+            {% if order.status == 'DELIVERED' %}
+                <span class="text-success"><i class="bi bi-box-seam-fill me-2"></i>{% trans "Delivered" %}</span>
+            {% elif order.status == 'CANCELLED' %}
+                <span class="text-danger"><i class="bi bi-x-circle-fill me-2"></i>{% trans "Cancelled" %}</span>
+            {% else %}
+                <span class="text-warning text-dark"><i class="bi bi-truck me-2"></i>{{ order.get_status_display }}</span>
+            {% endif %}
+        </h5>
+        
+        <div class="row mt-3">
+            {% for item in order.items.all %}
+            <div class="col-md-6 mb-3 d-flex">
+                {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" style="width: 80px; height: 80px; object-fit: contain;" class="rounded border p-1 me-3 bg-white">
+                {% else %}
+                    <div class="bg-light rounded border d-flex justify-content-center align-items-center me-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-image text-muted"></i>
+                    </div>
+                {% endif %}
+                <div>
+                    <h6 class="mb-1 fw-bold text-truncate" style="max-width: 250px;"><a href="{% url 'product_detail' item.product.id %}" class="text-dark text-decoration-none">{{ item.product_name }}</a></h6>
+                    <p class="small text-muted mb-1">{% trans "Sold by:" %} <a href="{% url 'seller_public_profile' order.seller.username %}" class="text-decoration-none fw-bold">{{ order.seller.username }}</a></p>
+                    <p class="small fw-bold mb-0">{% trans "Qty:" %} {{ item.quantity }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

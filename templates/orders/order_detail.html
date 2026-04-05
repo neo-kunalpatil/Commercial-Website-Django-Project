@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Order Details" %} - BuySphere{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent px-0 mb-3">
+            <li class="breadcrumb-item"><a href="{% url 'profile' %}" class="text-decoration-none">{% trans "Your Account" %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'orders:order_history' %}" class="text-decoration-none">{% trans "Your Orders" %}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{% trans "Order Details" %}</li>
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-2">
+        <h2 class="fw-normal mb-0">{% trans "Order Details" %}</h2>
+        <div class="text-md-end text-muted small text-uppercase">
+            {% trans "Placed on" %} {{ order.created_at|date:"d F Y" }} &nbsp;|&nbsp; 
+            {% trans "ID" %} <strong>#{{ order.order_id|stringformat:"s"|truncatechars:18 }}</strong>
+            {% if order.payment.status == 'COMPLETED' %}
+            <br>
+            <a href="{% url 'payments:receipt_view' order.order_id %}" target="_blank" class="btn btn-sm btn-outline-success border-0 px-0 fw-bold mt-1 shadow-none">
+                <i class="bi bi-file-earmark-pdf-fill"></i> Download Invoice
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Payment Rejection Alert -->
+    {% if order.payment and order.payment.status == 'REJECTED' %}
+    <div class="alert alert-danger shadow-sm border-0 border-start border-danger border-5 mb-4 py-3">
+        <h5 class="fw-bold"><i class="bi bi-x-octagon-fill me-2"></i>Payment Verification Failed</h5>
+        <p class="mb-2">The seller has rejected your payment proof.</p>
+        <div class="bg-white bg-opacity-25 p-2 rounded mb-3 small">
+            <strong>Seller's Reason:</strong> {{ order.payment.rejection_reason }}
+        </div>
+        <a href="{% url 'payments:payment_gateway' order.order_id %}" class="btn btn-danger btn-sm rounded-pill fw-bold px-4">
+            Re-Upload Payment Proof
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Tracking Timeline -->
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">{% trans "Delivery Tracking" %}</h5>
+                <span class="badge bg-dark bg-opacity-10 text-dark border p-2 px-3 fw-normal small">
+                    <span class="text-muted text-uppercase">Status:</span> {{ order.get_status_display }}
+                </span>
+            </div>
+
+            {% if order.status == 'CANCELLED' %}
+                <div class="alert alert-secondary mb-0 border-0 fw-bold text-center py-4 bg-light">
+                    <i class="bi bi-x-circle display-5 d-block mb-2 text-danger"></i>
+                    {% trans "This order was cancelled." %}
+                </div>
+            {% else %}
+                <div class="tracking-pipeline d-flex justify-content-between position-relative mt-2" style="padding: 0 40px;">
+                    <div class="progress position-absolute" style="height: 6px; width: 85%; top: 15px; z-index: 1; left: 7.5%;">
+                        {% widthratio current_index 6 100 as progress_width %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_width }}%;"></div>
+                    </div>
+                    {% for step_id, step_name in timeline %}
+                    <div class="text-center position-relative" style="z-index: 2; width: 14%;">
+                        <!-- dot -->
+                        <div class="rounded-circle {% if forloop.counter0 <= current_index %}bg-success{% else %}bg-white border-2 border-secondary border-opacity-25{% endif %} mx-auto text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; border: 3px solid white;">
+                            {% if forloop.counter0 < current_index %}<i class="bi bi-check-lg" style="font-size: 1.2rem;"></i>{% endif %}
+                        </div>
+                        <!-- text -->
+                        <div class="mt-2" style="font-size: 0.7rem; font-weight: 700; line-height: 1.1; {% if forloop.counter0 <= current_index %}color: #222;{% else %}color: #999;{% endif %}">
+                            {{ step_name|upper }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="row mt-5 pt-3 border-top g-3 text-start">
+                    <div class="col-md-4">
+                        <div class="small fw-bold text-uppercase text-muted mb-1">Expected Delivery</div>
+                        <div class="fw-bold">
+                            {% if order.expected_delivery_date %}
+                                {{ order.expected_delivery_date|date:"l, d M Y" }}
+                            {% else %}
+                                2-5 Business Days
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="small fw-bold text-uppercase text-muted mb-1">Shipping Partner</div>
+                        <div class="fw-bold">
+                            {% if order.courier_name %}
+                                <span class="text-primary">{{ order.courier_name }}</span>
+                            {% else %}
+                                Seller Shipping Partner
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="small fw-bold text-uppercase text-muted mb-1">Tracking ID</div>
+                        <div class="fw-bold font-monospace">
+                            {% if order.tracking_id %}
+                                {{ order.tracking_id }}
+                            {% else %}
+                                <span class="text-muted fw-normal">Available after dispatch</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if order.shipping_notes %}
+                <div class="mt-3 p-3 bg-light rounded-3 small">
+                    <strong><i class="bi bi-megaphone me-2"></i>Seller Update:</strong> 
+                    <span class="text-muted italic">"{{ order.shipping_notes }}"</span>
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Return Management Section -->
+    {% if has_return %}
+    <div class="card shadow-sm border-0 rounded-3 mb-4 border-start border-warning border-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3 text-wrap gap-2">
+                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-arrow-return-left me-2 text-warning"></i>{% trans "Return Request Status" %}</h5>
+                <span class="badge {% if return_req.status == 'APPROVED' or return_req.status == 'REFUNDED' %}bg-success{% elif return_req.status == 'REJECTED' %}bg-danger{% else %}bg-warning text-dark{% endif %} p-2 px-3 fw-bold rounded-pill">
+                    {{ return_req.get_status_display|upper }}
+                </span>
+            </div>
+            
+            <div class="row g-4 mt-1">
+                <div class="col-md-6 border-end-md pe-md-4">
+                    <div class="small fw-bold text-uppercase text-muted mb-2">{% trans "Submission Details" %}</div>
+                    <div class="p-3 bg-light rounded-3">
+                        <div class="extra-small text-muted mb-1 text-uppercase fw-bold">{% trans "Reason" %}</div>
+                        <div class="fw-bold text-dark mb-2">{{ return_req.reason }}</div>
+                        
+                        {% if return_req.comment %}
+                            <div class="extra-small text-muted p-2 border-start border-2 border-secondary border-opacity-25 italic bg-white bg-opacity-50">
+                                "{{ return_req.comment }}"
+                            </div>
+                        {% endif %}
+                        <div class="mt-3 pt-2 border-top extra-small text-muted">
+                            <i class="bi bi-clock me-1"></i> ID: #{{ return_req.id|stringformat:"s"|truncatechars:18 }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 ps-md-4 mt-3 mt-md-0">
+                    <div class="small fw-bold text-uppercase text-muted mb-2">{% trans "Seller Updates" %}</div>
+                    {% if return_req.admin_notes %}
+                        <div class="card border-info border-opacity-25 bg-info bg-opacity-10 shadow-none rounded-3">
+                            <div class="card-body p-3">
+                                <p class="mb-0 small text-dark"><i class="bi bi-chat-dots-fill me-2 text-info"></i> {{ return_req.admin_notes }}</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-muted small py-4 text-center italic border border-dashed rounded-3">
+                            <i class="bi bi-hourglass-split me-2"></i> {% trans "Awaiting seller's acknowledgement..." %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mt-3 d-flex justify-content-between align-items-center">
+                        <span class="extra-small text-muted italic">Last updated: {{ return_req.updated_at|date:"d M, Y" }}</span>
+                        {% if return_req.status == 'REQUESTED' %}
+                            <span class="badge bg-light text-muted border fw-normal small">{% trans "Est. feedback: 24h" %}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif order.status == 'DELIVERED' %}
+    <div class="card shadow-sm border-0 border-start border-primary border-5 rounded-3 mb-4 bg-primary bg-opacity-10">
+        <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle-fill fs-3 text-primary me-3"></i>
+                <div class="pe-md-4">
+                    <h6 class="fw-bold mb-1 text-primary">{% trans "Unhappy with your purchase?" %}</h6>
+                    <p class="small text-muted mb-0">{% trans "You can initiate a return or replacement within the eligible window (7 days)." %}</p>
+                </div>
+            </div>
+            <a href="{% url 'returns:request_return' order.order_id %}" class="btn btn-primary rounded-pill fw-bold px-4 shadow-sm">
+                {% trans "Request a Return" %}
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Details Grid -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border border-0 rounded-3">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-uppercase small text-muted border-bottom pb-2 mb-3">Shipping Address</h6>
+                    <address class="small mb-0 text-dark">
+                        <strong class="fs-6">{{ order.full_name }}</strong><br>
+                        {{ order.shipping_address }}<br>
+                        {{ order.city }}, {{ order.state }} - {{ order.pincode }}<br>
+                        <i class="bi bi-telephone text-muted mt-2 d-inline-block"></i> {{ order.phone }}
+                    </address>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border border-0 rounded-3">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-uppercase small text-muted border-bottom pb-2 mb-3">Payment Info</h6>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-wallet2 fs-3 text-secondary me-3"></i>
+                        <div>
+                            <div class="small fw-bold">Direct UPI Transfer</div>
+                            <div class="extra-small text-muted">Proof-based Verification</div>
+                        </div>
+                    </div>
+                    {% if order.payment %}
+                    <div class="small mt-2 p-2 rounded bg-light border border-secondary border-opacity-10">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">ID:</span>
+                            <span class="font-monospace fw-bold">{{ order.payment.transaction_id|truncatechars:15 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Status:</span>
+                            <span class="badge {% if order.payment.status == 'COMPLETED' %}bg-success{% elif order.payment.status == 'REJECTED' %}bg-danger{% else %}bg-warning text-dark{% endif %} px-2">
+                                {{ order.payment.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'payments:payment_gateway' order.order_id %}" class="btn btn-warning btn-sm w-100 fw-bold rounded-pill shadow-sm">
+                        Proceed to Payment
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 bg-dark text-white rounded-3 overflow-hidden">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-uppercase small text-white border-bottom border-secondary pb-2 mb-3 opacity-75">Order Summary</h6>
+                    <div class="d-flex justify-content-between small mb-1 opacity-75 mt-3">
+                        <span>Subtotal:</span>
+                        <span>₹{{ order.subtotal }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between small mb-1 opacity-75">
+                        <span>Shipping Cost:</span>
+                        <span>₹{{ order.shipping_charge }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold mt-3 pt-3 border-top border-secondary fs-5 text-warning">
+                        <span>Grand Total:</span>
+                        <span>₹{{ order.total_amount }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Items -->
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+        <div class="card-body p-0">
+            {% for item in order.items.all %}
+            <div class="row p-4 align-items-center g-0 {% if not forloop.last %}border-bottom border-light{% endif %}">
+                <div class="col-md-2 text-center mb-3 mb-md-0">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" class="img-fluid rounded border bg-white p-2 shadow-sm" style="max-height: 110px;">
+                    {% else %}
+                        <div class="bg-light p-4 rounded border"><i class="bi bi-image text-muted fs-3"></i></div>
+                    {% endif %}
+                </div>
+                <div class="col-md-5 ps-md-4">
+                    <h5 class="fw-bold mb-1 fs-6"><a href="{% url 'product_detail' item.product.id %}" class="text-dark text-decoration-none">{{ item.product_name }}</a></h5>
+                    <p class="text-muted extra-small mb-2 fw-bold text-uppercase">Sold by: <span class="text-primary">{{ order.seller.username }}</span></p>
+                    <div class="d-flex align-items-center mb-0">
+                        <span class="fs-6 fw-bold text-danger me-3">₹{{ item.price }}</span>
+                        <span class="badge bg-secondary rounded-pill fw-normal px-2">{% trans "Qty:" %} {{ item.quantity }}</span>
+                    </div>
+                </div>
+                <div class="col-md-5 text-end">
+                    <div class="d-flex flex-wrap justify-content-end gap-2">
+                        {% if order.status == 'DELIVERED' %}
+                            <a href="{% url 'reviews:add_review' item.product.id %}" class="btn btn-outline-dark rounded-pill fw-bold btn-sm px-3">{% trans "Review Product" %}</a>
+                        {% endif %}
+                        <a href="{% url 'product_detail' item.product.id %}" class="btn btn-warning rounded-pill shadow-sm fw-bold btn-sm px-4">{% trans "Buy It Again" %}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="card-footer bg-white p-3 px-4 d-flex justify-content-between align-items-center border-top">
+            <a href="{% url 'orders:order_history' %}" class="btn btn-link text-decoration-none text-dark fw-bold px-0 small"><i class="bi bi-chevron-left me-1"></i>{% trans "Back to Orders" %}</a>
+            
+            <div class="d-flex gap-2">
+                {% if order.status == 'PENDING_PAYMENT' or order.status == 'PLACED' or order.status == 'CONFIRMED' %}
+                    <form action="{% url 'orders:cancel_order' order.order_id %}" method="POST" class="m-0" onsubmit="return confirm('{% trans "Are you sure you want to cancel this order?" %}');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm fw-bold rounded-pill px-3">{% trans "Cancel Order" %}</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .extra-small { font-size: 0.75rem; }
+    .italic { font-style: italic; }
+</style>
+{% endblock %}

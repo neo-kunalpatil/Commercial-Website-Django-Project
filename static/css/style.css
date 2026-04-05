@@ -1,0 +1,63 @@
+/* BuySphere Header Top Section CSS */
+.buysphere-belt {
+    background: linear-gradient(90deg, #0F172A, #1E293B);
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+}
+
+.buysphere-logo {
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-decoration: none;
+    font-family: inherit;
+    letter-spacing: -0.5px;
+}
+.buysphere-logo .logo-buy {
+    color: #F8FAFC;
+}
+.buysphere-logo .logo-sphere {
+    color: #6366F1;
+}
+.buysphere-logo:hover {
+    text-decoration: none;
+}
+
+.search-belt.buysphere-search {
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    overflow: hidden;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.buysphere-search .form-select,
+.buysphere-search input,
+.buysphere-search button {
+    border: none;
+}
+
+/* Hover effects for menu items */
+.buysphere-menu-item {
+    transition: 0.3s;
+    border-radius: 6px;
+}
+.buysphere-menu-item:hover {
+    background: rgba(99, 102, 241, 0.1);
+    color: #818CF8 !important;
+}
+.buysphere-menu-item:hover * {
+    color: #818CF8 !important;
+}
+
+/* Cart highlight */
+.buysphere-cart-icon {
+    transition: 0.3s;
+}
+.buysphere-menu-item:hover .buysphere-cart-icon {
+    color: #6366F1;
+}
+
+/* Restore the standard text color */
+.nav-belt.buysphere-belt {
+    color: #F8FAFC;
+}

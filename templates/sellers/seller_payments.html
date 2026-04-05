@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block title %}Earnings & Payouts - Seller Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mt-4 mb-5">
+    <div class="col-md-3 mb-4">
+        <div class="list-group shadow-sm border-0">
+            <a href="{% url 'seller_dashboard' %}" class="list-group-item list-group-item-action">Dashboard</a>
+            <a href="{% url 'payments:payment_verification_list' %}" class="list-group-item list-group-item-action">Verify Payments</a>
+            <a href="{% url 'seller_payments' %}" class="list-group-item list-group-item-action active" style="background-color: #f0c14b; border-color: #a88734; color: #111; font-weight: 500;">Earnings & Finance</a>
+            <a href="{% url 'seller_orders' %}" class="list-group-item list-group-item-action">Manage Orders</a>
+            <a href="{% url 'seller_product_list' %}" class="list-group-item list-group-item-action">My Products</a>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h4 mb-0"><i class="bi bi-wallet2 me-2"></i>Earnings Dashboard</h2>
+            <a href="{% url 'seller_payment_setup' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                <i class="bi bi-bank me-1"></i> Payout Settings
+            </a>
+        </div>
+
+        {% if not has_payment_setup %}
+        <div class="alert alert-danger shadow-sm border-0 mb-4 py-3">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-octagon-fill fs-3 me-3 text-danger"></i>
+                <div>
+                    <h6 class="fw-bold mb-0">Missing Payout Method!</h6>
+                    <p class="small mb-0 opacity-75">You must configure your UPI or Bank details to receive your earnings.</p>
+                </div>
+                <a href="{% url 'seller_payment_setup' %}" class="btn btn-danger btn-sm ms-auto fw-bold px-3 rounded-pill">Setup Now</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Earnings Breakdown Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 h-100 bg-primary bg-opacity-10">
+                    <div class="card-body p-3">
+                        <span class="text-muted small text-uppercase fw-bold">Today</span>
+                        <h4 class="fw-bold mb-0 mt-1 text-primary">₹{{ today_earnings|floatformat:2 }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 h-100 bg-success bg-opacity-10">
+                    <div class="card-body p-3">
+                        <span class="text-muted small text-uppercase fw-bold">This Week</span>
+                        <h4 class="fw-bold mb-0 mt-1 text-success">₹{{ week_earnings|floatformat:2 }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 h-100 bg-info bg-opacity-10">
+                    <div class="card-body p-3">
+                        <span class="text-muted small text-uppercase fw-bold">This Month</span>
+                        <h4 class="fw-bold mb-0 mt-1 text-info">₹{{ month_earnings|floatformat:2 }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 h-100 bg-dark bg-opacity-10">
+                    <div class="card-body p-3">
+                        <span class="text-muted small text-uppercase fw-bold">Life-Time</span>
+                        <h4 class="fw-bold mb-0 mt-1 text-dark">₹{{ total_earnings|floatformat:2 }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Highlight Stats -->
+        <div class="row mb-5 g-3">
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 h-100 bg-primary bg-opacity-10">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-muted text-uppercase mb-0 fw-bold small">Settled Earnings</h6>
+                            <i class="bi bi-cash-coin fs-4 text-primary"></i>
+                        </div>
+                        <h2 class="fw-bold mb-1 text-primary">₹{{ total_earnings|floatformat:2 }}</h2>
+                        <small class="text-muted">Available for disbursement.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 h-100 bg-warning bg-opacity-10">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-muted text-uppercase mb-0 fw-bold small">Pending Transit</h6>
+                            <i class="bi bi-truck fs-4 text-warning"></i>
+                        </div>
+                        <h2 class="fw-bold mb-1 text-dark">₹{{ pending_earnings|floatformat:2 }}</h2>
+                        <small class="text-muted">Orders confirmed & in delivery.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 h-100 bg-danger bg-opacity-10">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="text-muted text-uppercase mb-0 fw-bold small">Pending Verification</h6>
+                            <i class="bi bi-shield-lock-fill fs-4 text-danger"></i>
+                        </div>
+                        <h2 class="fw-bold mb-1 text-danger">₹{{ pending_verification_earnings|floatformat:2 }}</h2>
+                        <small class="text-muted">Proof submitted, needs your approval.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT TRANSACTIONS -->
+        <div class="card shadow-sm border-0 mb-5">
+            <div class="card-header bg-white py-3">
+                <h5 class="h6 fw-bold mb-0 text-uppercase">Sales (Settled Transactions)</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="border-0 small">Date</th>
+                            <th class="border-0 small">Order ID</th>
+                            <th class="border-0 small">Status</th>
+                            <th class="border-0 small text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_transactions %}
+                        <tr>
+                            <td class="text-muted small">{{ order.updated_at|date:"d M Y" }}</td>
+                            <td class="fw-bold small">#{{ order.id }}</td>
+                            <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 small">Settled</span></td>
+                            <td class="text-end fw-bold text-success">+₹{{ order.total_amount }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted small">No settled transactions yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PAYOUT HISTORY -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="h6 fw-bold mb-0 text-uppercase">Payout History (Tracked Manually)</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="border-0 small">Payout Date</th>
+                            <th class="border-0 small">Reference</th>
+                            <th class="border-0 small text-center">Status</th>
+                            <th class="border-0 small text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payout in payouts %}
+                        <tr class="{% if payout.status == 'RELEASED' %}table-success bg-opacity-10{% endif %}">
+                            <td class="small">{{ payout.payout_date|default:payout.created_at|date:"d M Y" }}</td>
+                            <td class="small font-monospace opacity-75">{{ payout.notes|default:"-"|truncatechars:20 }}</td>
+                            <td class="text-center">
+                                {% if payout.status == 'RELEASED' %}
+                                <span class="badge bg-success rounded-pill px-3">RELEASED</span>
+                                {% elif payout.status == 'PENDING' %}
+                                <span class="badge bg-warning text-dark rounded-pill px-3">PENDING</span>
+                                {% else %}
+                                <span class="badge bg-secondary rounded-pill px-3">{{ payout.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end fw-bold">₹{{ payout.amount }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted small">No payout records found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
