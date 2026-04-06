@@ -187,7 +187,28 @@ def seller_payments(request):
     # Payouts
     payouts = SellerPayout.objects.filter(seller=request.user).order_by('-created_at')
     released_payouts = payouts.filter(status='RELEASED').aggregate(Sum('amount'))['amount__sum'] or 0.00
+    pending_payouts = payouts.filter(status='PENDING').aggregate(Sum('amount'))['amount__sum'] or 0.00
     
+    available_balance = total_earnings - (released_payouts + pending_payouts)
+    
+    # Handle Payout Request
+    if request.method == 'POST' and 'request_payout' in request.POST:
+        amount_to_request = available_balance # for now request full balance
+        if amount_to_request > 0:
+            if not (request.user.sellerprofile.bank_account_number or request.user.sellerprofile.upi_id):
+                messages.error(request, "Please setup your payment details (Bank/UPI) first.")
+            else:
+                SellerPayout.objects.create(
+                    seller=request.user,
+                    amount=amount_to_request,
+                    status='PENDING',
+                    notes='Auto-generated request via dashboard.'
+                )
+                messages.success(request, f"Payout request for ₹{amount_to_request} submitted successfully!")
+                return redirect('seller_payments')
+        else:
+            messages.error(request, "Insufficient balance for payout.")
+
     try:
         has_payment_setup = bool(request.user.sellerprofile.bank_account_number or request.user.sellerprofile.upi_id)
     except Exception:
@@ -199,6 +220,7 @@ def seller_payments(request):
         'week_earnings': week_earnings,
         'month_earnings': month_earnings,
         'pending_earnings': pending_earnings,
+        'available_balance': available_balance,
         'pending_verification_earnings': pending_verification_earnings,
         'released_payouts': released_payouts,
         'recent_transactions': all_delivered.order_by('-updated_at')[:15],
