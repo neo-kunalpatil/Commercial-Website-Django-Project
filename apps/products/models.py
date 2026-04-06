@@ -32,8 +32,16 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            # simple slug generator that handles uniqueness trivially for demo, but better to use robust strategy in prod
-            self.slug = slugify(self.name) + "-" + str(self.seller.id)
+            import uuid
+            base_slug = slugify(self.name)
+            # Initial slug: name-sellerid
+            generated_slug = f"{base_slug}-{self.seller.id}"
+            
+            # Check for collisions and append unique suffix if necessary
+            if Product.objects.filter(slug=generated_slug).exists():
+                generated_slug = f"{generated_slug}-{uuid.uuid4().hex[:6]}"
+                
+            self.slug = generated_slug
         super().save(*args, **kwargs)
 
     def __str__(self):
