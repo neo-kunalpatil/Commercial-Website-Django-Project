@@ -14,7 +14,7 @@
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         {% for cat in categories %}
-        <div class="col">
+        <div class="col" style="--item-index: {{ forloop.counter0 }};">
             <a href="{% url 'category_products' cat.slug %}" class="text-decoration-none">
                 <div class="card h-100 border-0 shadow-sm category-card text-center p-3 animate-up">
                     <div class="category-icon-wrapper mb-3 mx-auto d-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
@@ -48,15 +48,11 @@
     }
     .animate-up {
         animation: fadeInUp 0.5s ease backwards;
+        animation-delay: calc(var(--item-index) * 0.05s);
     }
     @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    {% for cat in categories %}
-    .col:nth-child({{ forloop.counter }}) .animate-up {
-        animation-delay: {{ forloop.counter0|add:1|mul:0.05 }}s;
-    }
-    {% endfor %}
 </style>
 {% endblock %}
