@@ -30,7 +30,7 @@
             <div class="drawer-section">
                 <div class="drawer-section-title">Shop By Category</div>
                 <a href="{% url 'product_list' %}" class="drawer-item">All Products</a>
-                {% for cat in categories|default:"" %}
+                {% for cat in all_categories|default:"" %}
                     <a href="{% url 'category_products' cat.slug %}" class="drawer-item">{{ cat.name }}</a>
                 {% endfor %}
             </div>

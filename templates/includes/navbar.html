@@ -21,7 +21,7 @@
         <form action="{% url 'product_list' %}" method="GET" class="search-belt buysphere-search w-100 mx-3">
             <select name="category" class="form-select w-auto shadow-none rounded-start border-0 fw-semibold bg-light" style="max-width: 60px;">
                 <option value="">All</option>
-                {% for cat in categories|default:"" %}
+                {% for cat in all_categories|default:"" %}
                     <option value="{{ cat.slug }}" {% if current_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
                 {% endfor %}
             </select>

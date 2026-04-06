@@ -1,6 +1,8 @@
 from .models import Category
 
 def categories_processor(request):
+    categories = Category.objects.all()
     return {
-        'all_categories': Category.objects.all()
+        'all_categories': categories,
+        'categories': categories
     }
