@@ -112,6 +112,18 @@
             <a href="{% url 'category_products' cat.slug %}">{{ cat.name }}</a>
         {% endfor %}
         <a href="{% url 'seller_dashboard' %}">{% trans "Sell" %}</a>
+        <div class="nav-item dropdown d-inline-block">
+            <a href="{% url 'category_list' %}" class="dropdown-toggle text-decoration-none text-white px-2" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {% trans "Categories" %}
+            </a>
+            <ul class="dropdown-menu shadow-lg border-0 py-2" aria-labelledby="categoriesDropdown" style="min-width: 220px; max-height: 400px; overflow-y: auto;">
+                <li><a class="dropdown-item fw-bold text-primary" href="{% url 'category_list' %}">{% trans "All Categories" %}</a></li>
+                <li><hr class="dropdown-divider"></li>
+                {% for cat in all_categories %}
+                    <li><a class="dropdown-item py-2" href="{% url 'category_products' cat.slug %}">{{ cat.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
         <a href="#">{% trans "Amazon Pay" %}</a>
     </div>
 </header>

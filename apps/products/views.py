@@ -19,10 +19,17 @@ def product_create(request):
             product.seller = request.user
             product.save()
             messages.success(request, 'Product created successfully!')
-            return redirect('seller_product_list')
+            return redirect('category_list')
     else:
         form = ProductForm()
     return render(request, 'products/product_form.html', {'form': form, 'action': 'Create'})
+
+def category_list(request):
+    """
+    View to display all categories for browsing.
+    """
+    categories = Category.objects.all()
+    return render(request, 'products/category_list.html', {'categories': categories})
 
 @seller_required
 def product_update(request, pk):

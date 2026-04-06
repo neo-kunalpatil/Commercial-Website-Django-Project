@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Amazon.in : Shop by Category{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 fw-bold">Shop by Category</h1>
+            <p class="text-muted">Choose a category to browse our wide selection of products.</p>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for cat in categories %}
+        <div class="col">
+            <a href="{% url 'category_products' cat.slug %}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm category-card text-center p-3 animate-up">
+                    <div class="category-icon-wrapper mb-3 mx-auto d-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
+                        <i class="bi bi-tag fs-1 text-primary"></i>
+                    </div>
+                    <div class="card-body p-0">
+                        <h5 class="card-title text-dark fw-bold mb-1">{{ cat.name }}</h5>
+                        <p class="card-text text-muted small">Explore products in {{ cat.name }}</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="alert alert-info">No categories found.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .category-card {
+        transition: all 0.3s ease;
+        background: #fff;
+        border-radius: 12px;
+    }
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        background: #f8f9fa;
+    }
+    .animate-up {
+        animation: fadeInUp 0.5s ease backwards;
+    }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    {% for cat in categories %}
+    .col:nth-child({{ forloop.counter }}) .animate-up {
+        animation-delay: {{ forloop.counter0|add:1|mul:0.05 }}s;
+    }
+    {% endfor %}
+</style>
+{% endblock %}
