@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block content %}
-<h1 style="color:red; text-align:center; padding: 20px;">KUNAL TEST 123</h1>
 <div class="hero-slider-container">
     <div id="homeHeroCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
@@ -29,55 +28,55 @@
     <!-- Category Promo Grids (4 Item Cards) -->
     <div class="row gx-4 mb-4">
         
-        <!-- Feature Promo 1 -->
+        <!-- Feature Promo 1: Books -->
         <div class="col-12 col-md-6 col-xl-3">
             <div class="amz-card d-flex flex-column h-100">
-                <h4 class="mb-3 fw-bold fs-5">Revamp your home in style</h4>
+                <h4 class="mb-3 fw-bold fs-5">Shop Books</h4>
                 <div class="home-card-grid flex-grow-1">
-                    <a href="{% url 'product_list' %}?q=cushion" class="text-decoration-none text-dark d-flex flex-column">
+                    <a href="{% url 'product_list' %}?q=fiction" class="text-decoration-none text-dark d-flex flex-column">
+                        <img src="https://m.media-amazon.com/images/I/51p2SDJ86JL._SY232_CB605179262_.jpg" alt="">
+                        <span class="mt-1">Fiction & Literature</span>
+                    </a>
+                    <a href="{% url 'product_list' %}?q=nonfiction" class="text-decoration-none text-dark d-flex flex-column">
+                        <img src="https://m.media-amazon.com/images/I/51Xv6uP8-6L._SY232_CB583161309_.jpg" alt="">
+                        <span class="mt-1">Non-Fiction</span>
+                    </a>
+                    <a href="{% url 'product_list' %}?q=children" class="text-decoration-none text-dark d-flex flex-column">
+                        <img src="https://m.media-amazon.com/images/I/51Yp8S6T24L._SY232_CB605179262_.jpg" alt="">
+                        <span class="mt-1">Children's Books</span>
+                    </a>
+                    <a href="{% url 'product_list' %}?q=educational" class="text-decoration-none text-dark d-flex flex-column">
                         <img src="https://m.media-amazon.com/images/I/41-6p6n+E2L._SY232_CB605179262_.jpg" alt="">
-                        <span class="mt-1">Cushion covers, bedsheets</span>
-                    </a>
-                    <a href="{% url 'product_list' %}?q=vase" class="text-decoration-none text-dark d-flex flex-column">
-                        <img src="https://m.media-amazon.com/images/I/41KlsEq9QeL._SY232_CB583161309_.jpg" alt="">
-                        <span class="mt-1">Figurines, vases & more</span>
-                    </a>
-                    <a href="{% url 'product_list' %}?q=storage" class="text-decoration-none text-dark d-flex flex-column">
-                        <img src="https://m.media-amazon.com/images/I/31S8H9B68vL._SY232_CB605179262_.jpg" alt="">
-                        <span class="mt-1">Home storage</span>
-                    </a>
-                    <a href="{% url 'product_list' %}?q=lighting" class="text-decoration-none text-dark d-flex flex-column">
-                        <img src="https://m.media-amazon.com/images/I/41f+o+YhI0L._SY232_CB605179262_.jpg" alt="">
-                        <span class="mt-1">Lighting solutions</span>
+                        <span class="mt-1">Educational</span>
                     </a>
                 </div>
-                <a href="{% url 'product_list' %}?category=home" class="mt-3 text-info fw-semibold text-decoration-none">Explore all</a>
+                <a href="{% url 'product_list' %}?category=books" class="mt-3 text-info fw-semibold text-decoration-none">Explore all</a>
             </div>
         </div>
 
-        <!-- Feature Promo 2 -->
+        <!-- Feature Promo 2: Toys -->
         <div class="col-12 col-md-6 col-xl-3">
             <div class="amz-card d-flex flex-column h-100">
-                <h4 class="mb-3 fw-bold fs-5">Starting ₹149 | Headphones</h4>
+                <h4 class="mb-3 fw-bold fs-5">New arrivals in Toys</h4>
                 <div class="home-card-grid flex-grow-1">
-                    <a href="{% url 'product_list' %}?q=boat" class="text-decoration-none text-dark d-flex flex-column">
+                    <a href="{% url 'product_list' %}?q=action+figures" class="text-decoration-none text-dark d-flex flex-column">
                         <img src="https://m.media-amazon.com/images/I/412p2rQ24aL._SY232_CB644342598_.jpg" alt="">
-                        <span class="mt-1">boAt</span>
+                        <span class="mt-1">Action Figures</span>
                     </a>
-                    <a href="{% url 'product_list' %}?q=boult" class="text-decoration-none text-dark d-flex flex-column">
+                    <a href="{% url 'product_list' %}?q=puzzles" class="text-decoration-none text-dark d-flex flex-column">
                         <img src="https://m.media-amazon.com/images/I/41Z-6-zKxkL._SY232_CB644342598_.jpg" alt="">
-                        <span class="mt-1">Boult</span>
+                        <span class="mt-1">Puzzles</span>
                     </a>
-                    <a href="{% url 'product_list' %}?q=noise" class="text-decoration-none text-dark d-flex flex-column">
+                    <a href="{% url 'product_list' %}?q=board+games" class="text-decoration-none text-dark d-flex flex-column">
                         <img src="https://m.media-amazon.com/images/I/41mBvInrC7L._SY232_CB644342598_.jpg" alt="">
-                        <span class="mt-1">Noise</span>
+                        <span class="mt-1">Board Games</span>
                     </a>
-                    <a href="{% url 'product_list' %}?q=zebronics" class="text-decoration-none text-dark d-flex flex-column">
+                    <a href="{% url 'product_list' %}?q=dolls" class="text-decoration-none text-dark d-flex flex-column">
                         <img src="https://m.media-amazon.com/images/I/41e2j7xndcL._SY232_CB644342598_.jpg" alt="">
-                        <span class="mt-1">Zebronics</span>
+                        <span class="mt-1">Dolls & More</span>
                     </a>
                 </div>
-                <a href="{% url 'product_list' %}?category=electronics" class="mt-3 text-info fw-semibold text-decoration-none">See all offers</a>
+                <a href="{% url 'product_list' %}?category=toys-games" class="mt-3 text-info fw-semibold text-decoration-none">See all offers</a>
             </div>
         </div>
         
